@@ -1,241 +1,116 @@
 
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulação de Planos Hapvida</title>
+    <title>Simulador de Planos de Saúde</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 900px;
-            margin: 20px auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            background-color: #f0f8ff;
+            color: #333;
         }
         h1 {
-            text-align: center;
-            margin-bottom: 20px;
+            color: #004080;
         }
-        label {
-            font-size: 16px;
+        .section {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        input[type="number"], select {
+        label, select, input {
+            display: block;
+            margin-bottom: 10px;
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+            font-size: 1rem;
         }
         button {
-            padding: 10px 15px;
-            font-size: 16px;
-            background-color: #4CAF50;
+            background-color: #004080;
             color: white;
+            padding: 10px;
             border: none;
-            cursor: pointer;
             border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
             width: 100%;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #003060;
         }
         .result {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #e9f7e9;
-            border: 1px solid #4CAF50;
-            border-radius: 5px;
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #e6f0ff;
+            border-left: 5px solid #004080;
+            white-space: pre-wrap;
         }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <h1>Simulação de Planos Hapvida</h1>
-    <label for="idade">Idade:</label>
-    <input type="number" id="idade" placeholder="Informe sua idade">
-
-    <label for="plano">Tipo de Plano:</label>
-    <select id="plano">
-        <option value="plano_individual_completo">Plano Individual – Nosso plano (COMPLETO)</option>
-        <option value="plano_individual_ambulatorial">Plano Individual – Ambulatorial</option>
-        <option value="plano_empresarial_completo">Plano Empresarial – Nosso plano (COMPLETO)</option>
-        <option value="plano_empresarial_ambulatorial">Plano Empresarial – Ambulatorial</option>
-    </select>
-
-    <label for="coparticipacao">Tipo de Coparticipação:</label>
-    <select id="coparticipacao">
-        <option value="coparticipacao_total">Coparticipação Total</option>
-        <option value="coparticipacao_parcial">Coparticipação Parcial</option>
-    </select>
-
-    <button onclick="calcularValor()">Calcular Valor</button>
-
-    <div class="result" id="resultado">
-        <!-- O resultado será exibido aqui -->
+    <h1>Simulador de Planos de Saúde</h1>
+    <div class="section">
+        <label for="idades">Digite as idades separadas por vírgula:</label>
+        <input type="text" id="idades" placeholder="Ex: 22, 35, 58">
+        <button onclick="calcular()">Calcular</button>
+        <div id="resultado" class="result"></div>
     </div>
-</div>
 
-<script>
-    const planos = {
-        "plano_individual_completo": {
-            "coparticipacao_total": [
-                { idade: "00 a 18", valor: 152.80 },
-                { idade: "19 a 23", valor: 195.29 },
-                { idade: "24 a 28", valor: 221.57 },
-                { idade: "29 a 33", valor: 245.75 },
-                { idade: "34 a 38", valor: 257.04 },
-                { idade: "39 a 43", valor: 287.85 },
-                { idade: "44 a 48", valor: 346.77 },
-                { idade: "49 a 53", valor: 470.92 },
-                { idade: "54 a 58", valor: 628.72 },
-                { idade: "59+", valor: 811.32 }
-            ],
-            "coparticipacao_parcial": [
-                { idade: "00 a 18", valor: 186.00 },
-                { idade: "19 a 23", valor: 239.10 },
-                { idade: "24 a 28", valor: 271.96 },
-                { idade: "29 a 33", valor: 302.18 },
-                { idade: "34 a 38", valor: 316.29 },
-                { idade: "39 a 43", valor: 354.81 },
-                { idade: "44 a 48", valor: 428.45 },
-                { idade: "49 a 53", valor: 583.64 },
-                { idade: "54 a 58", valor: 780.90 },
-                { idade: "59+", valor: 1009.16 }
-            ]
-        },
-        "plano_individual_ambulatorial": {
-            "coparticipacao_total": [
-                { idade: "00 a 18", valor: 99.71 },
-                { idade: "19 a 23", valor: 130.90 },
-                { idade: "24 a 28", valor: 149.04 },
-                { idade: "29 a 33", valor: 166.11 },
-                { idade: "34 a 38", valor: 174.74 },
-                { idade: "39 a 43", valor: 196.02 },
-                { idade: "44 a 48", valor: 239.41 },
-                { idade: "49 a 53", valor: 331.55 },
-                { idade: "54 a 58", valor: 446.49 },
-                { idade: "59+", valor: 579.49 }
-            ],
-            "coparticipacao_parcial": [
-                { idade: "00 a 18", valor: 155.18 },
-                { idade: "19 a 23", valor: 204.28 },
-                { idade: "24 a 28", valor: 232.84 },
-                { idade: "29 a 33", valor: 259.72 },
-                { idade: "34 a 38", valor: 273.32 },
-                { idade: "39 a 43", valor: 306.82 },
-                { idade: "44 a 48", valor: 375.14 },
-                { idade: "49 a 53", valor: 520.22 },
-                { idade: "54 a 58", valor: 701.19 },
-                { idade: "59+", valor: 910.61 }
-            ]
-        },
-        "plano_empresarial_completo": {
-            "coparticipacao_total": [
-                { idade: "00 a 18", valor: 116.52 },
-                { idade: "19 a 23", valor: 130.50 },
-                { idade: "24 a 28", valor: 146.16 },
-                { idade: "29 a 33", valor: 168.08 },
-                { idade: "34 a 38", valor: 193.29 },
-                { idade: "39 a 43", valor: 230.02 },
-                { idade: "44 a 48", valor: 287.52 },
-                { idade: "49 a 53", valor: 359.41 },
-                { idade: "54 a 58", valor: 610.99 },
-                { idade: "59+", valor: 684.31 }
-            ],
-            "coparticipacao_parcial": [
-                { idade: "00 a 18", valor: 149.08 },
-                { idade: "19 a 23", valor: 166.97 },
-                { idade: "24 a 28", valor: 187.01 },
-                { idade: "29 a 33", valor: 215.06 },
-                { idade: "34 a 38", valor: 247.32 },
-                { idade: "39 a 43", valor: 294.30 },
-                { idade: "44 a 48", valor: 367.88 },
-                { idade: "49 a 53", valor: 459.85 },
-                { idade: "54 a 58", valor: 781.75 },
-                { idade: "59+", valor: 875.55 }
-            ]
-        },
-        "plano_empresarial_ambulatorial": {
-            "coparticipacao_total": [
-                { idade: "00 a 18", valor: 81.63 },
-                { idade: "19 a 23", valor: 91.42 },
-                { idade: "24 a 28", valor: 102.39 },
-                { idade: "29 a 33", valor: 117.75 },
-                { idade: "34 a 38", valor: 135.41 },
-                { idade: "39 a 43", valor: 161.14 },
-                { idade: "44 a 48", valor: 201.43 },
-                { idade: "49 a 53", valor: 251.80 },
-                { idade: "54 a 58", valor: 337.17 },
-                { idade: "59+", valor: 427.35 }
-            ],
-            "coparticipacao_parcial": [
-                { idade: "00 a 18", valor: 107.56 },
-                { idade: "19 a 23", valor: 121.14 },
-                { idade: "24 a 28", valor: 136.07 },
-                { idade: "29 a 33", valor: 154.13 },
-                { idade: "34 a 38", valor: 174.67 },
-                { idade: "39 a 43", valor: 204.39 },
-                { idade: "44 a 48", valor: 251.88 },
-                { idade: "49 a 53", valor: 314.26 },
-                { idade: "54 a 58", valor: 419.38 },
-                { idade: "59+", valor: 523.21 }
-            ]
-        }
-    };
+    <script>
+        const faixas = [18, 23, 28, 33, 38, 43, 48, 53, 58, 150];
 
-    function calcularValor() {
-        const idade = document.getElementById("idade").value;
-        const plano = document.getElementById("plano").value;
-        const coparticipacao = document.getElementById("coparticipacao").value;
-        const resultadoDiv = document.getElementById("resultado");
+        const planos = {
+            "Plano Empresarial – Nosso plano (COMPLETO)": {
+                "coparticipação total": [116.52, 130.50, 146.16, 168.08, 193.29, 230.02, 287.52, 359.41, 610.99, 684.31],
+                "coparticipação parcial": [149.08, 166.97, 187.01, 215.06, 247.32, 294.30, 367.88, 459.85, 781.75, 875.55]
+            },
+            "Plano Empresarial – Ambulatorial": {
+                "coparticipação total": [81.63, 91.42, 102.39, 117.75, 135.41, 161.14, 201.43, 251.80, 428.05, 479.42],
+                "coparticipação parcial": [110.53, 123.79, 138.64, 159.44, 183.36, 218.20, 272.76, 340.94, 579.61, 649.16]
+            },
+            "Plano Individual – Nosso plano (COMPLETO)": {
+                "coparticipação total": [152.80, 195.29, 221.57, 245.75, 257.04, 287.85, 346.77, 470.92, 628.72, 811.32],
+                "coparticipação parcial": [186.00, 239.10, 271.96, 302.18, 316.29, 354.81, 428.45, 583.64, 780.90, 1009.16]
+            },
+            "Plano Individual – Ambulatorial": {
+                "coparticipação total": [99.71, 130.90, 149.04, 166.11, 174.74, 196.02, 239.41, 331.55, 446.49, 579.49],
+                "coparticipação parcial": [155.18, 204.28, 232.84, 259.72, 273.32, 306.82, 375.14, 520.22, 701.19, 910.61]
+            }
+        };
 
-        if (!idade) {
-            resultadoDiv.innerHTML = "Por favor, informe sua idade.";
-            return;
+        function faixaEtaria(idade) {
+            for (let i = 0; i < faixas.length; i++) {
+                if (idade <= faixas[i]) return i;
+            }
+            return faixas.length - 1;
         }
 
-        let faixaEtaria = "";
-        if (idade >= 0 && idade <= 18) {
-            faixaEtaria = "00 a 18";
-        } else if (idade >= 19 && idade <= 23) {
-            faixaEtaria = "19 a 23";
-        } else if (idade >= 24 && idade <= 28) {
-            faixaEtaria = "24 a 28";
-        } else if (idade >= 29 && idade <= 33) {
-            faixaEtaria = "29 a 33";
-        } else if (idade >= 34 && idade <= 38) {
-            faixaEtaria = "34 a 38";
-        } else if (idade >= 39 && idade <= 43) {
-            faixaEtaria = "39 a 43";
-        } else if (idade >= 44 && idade <= 48) {
-            faixaEtaria = "44 a 48";
-        } else if (idade >= 49 && idade <= 53) {
-            faixaEtaria = "49 a 53";
-        } else if (idade >= 54 && idade <= 58) {
-            faixaEtaria = "54 a 58";
-        } else if (idade >= 59) {
-            faixaEtaria = "59+";
+        function calcular() {
+            const idades = document.getElementById("idades").value.split(",").map(x => parseInt(x.trim())).filter(x => !isNaN(x));
+            let resultado = "";
+
+            for (const [plano, tipos] of Object.entries(planos)) {
+                resultado += `\n${plano}\n`;
+
+                for (const [tipo, valores] of Object.entries(tipos)) {
+                    let total = 0;
+                    resultado += `\n${tipo}\n`;
+                    idades.forEach(idade => {
+                        const faixa = faixaEtaria(idade);
+                        const valor = valores[faixa];
+                        total += valor;
+                        resultado += `Idade ${idade}: R$ ${valor.toFixed(2)}\n`;
+                    });
+                    resultado += `Total: R$ ${total.toFixed(2)}\n`;
+                }
+                resultado += "\n----------------------------------------\n";
+            }
+
+            document.getElementById("resultado").innerText = resultado;
         }
-
-        const planoSelecionado = planos[plano][coparticipacao];
-        const valorPlano = planoSelecionado.find(item => item.idade === faixaEtaria);
-
-        if (valorPlano) {
-            resultadoDiv.innerHTML = `O valor do plano é: R$ ${valorPlano.valor.toFixed(2)}`;
-        } else {
-            resultadoDiv.innerHTML = "Faixa etária não encontrada para este plano.";
-        }
-    }
-</script>
-
+    </script>
 </body>
 </html>
