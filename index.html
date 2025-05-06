@@ -52,6 +52,14 @@
             display: flex;
             justify-content: space-between;
         }
+        .btn-container div {
+            width: 48%;
+        }
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
@@ -69,6 +77,9 @@
                     <option value="empresarial">Plano Empresarial</option>
                 </select>
             </div>
+        </div>
+
+        <div class="btn-container">
             <div>
                 <label for="tipo-cobertura">Selecione o tipo de cobertura:</label>
                 <select id="tipo-cobertura">
@@ -78,8 +89,10 @@
             </div>
         </div>
         
-        <button onclick="calcular()">Calcular</button>
-        <button onclick="copiarResultado()">Copiar Resultado</button>
+        <div class="button-group">
+            <button onclick="calcular()">Calcular</button>
+            <button onclick="copiarResultado()">Copiar Resultado</button>
+        </div>
 
         <div id="resultado" class="result"></div>
     </div>
