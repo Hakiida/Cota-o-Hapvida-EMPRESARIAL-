@@ -1,209 +1,154 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulação de Planos</title>
+    <title>Simulador de Planos de Saúde</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            background-color: #f4f4f9;
         }
-
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-
         .container {
-            width: 80%;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: auto;
         }
-
-        .select-plan {
-            margin: 20px 0;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        .select-plan select {
+        select, button {
             padding: 10px;
+            margin: 10px 0;
+            width: 100%;
             font-size: 16px;
         }
-
-        .simulator {
+        table {
+            width: 100%;
+            border-collapse: collapse;
             margin: 20px 0;
         }
-
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
         .result {
-            background-color: #e6f7ff;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            white-space: pre-wrap;
-        }
-
-        .copy-btn {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .copy-btn:hover {
-            background-color: #0056b3;
-        }
-
-        .footer {
-            text-align: center;
             margin-top: 20px;
-            font-size: 12px;
-            color: #777;
         }
     </style>
 </head>
 <body>
 
-    <h1>Simulação de Planos Hapvida</h1>
+<div class="container">
+    <h1>Simulador de Planos de Saúde</h1>
+    <label for="planoSelect">Selecione o tipo de plano:</label>
+    <select id="planoSelect">
+        <option value="empresarial">Plano Empresarial</option>
+        <option value="individual">Plano Individual</option>
+    </select>
 
-    <div class="container">
-        <div class="select-plan">
-            <label for="plan">Escolha o plano:</label>
-            <select id="plan">
-                <option value="nosso_plano">Nosso Plano</option>
-                <option value="ambulatorial">Ambulatorial</option>
-            </select>
-        </div>
+    <label for="coparticipacaoSelect">Selecione o tipo de coparticipação:</label>
+    <select id="coparticipacaoSelect">
+        <option value="com">Com coparticipação</option>
+        <option value="sem">Sem coparticipação</option>
+    </select>
 
-        <div class="simulator">
-            <label for="ages">Digite as idades separadas por vírgula:</label>
-            <input type="text" id="ages" placeholder="Exemplo: 13,15,27">
-            <button onclick="generateResult()">Gerar Resultados</button>
-        </div>
+    <label for="idadeInput">Informe a sua idade:</label>
+    <input type="number" id="idadeInput" min="0" max="120" placeholder="Digite sua idade" />
 
-        <div class="result" id="resultText"></div>
+    <button onclick="calcularValor()">Calcular</button>
 
-        <button class="copy-btn" onclick="copyToClipboard()">Copiar Texto</button>
-    </div>
+    <div class="result" id="result"></div>
+</div>
 
-    <div class="footer">
-        <p>&copy; 2025 Simulação Hapvida</p>
-    </div>
-
-    <script>
-        function generateResult() {
-            const agesInput = document.getElementById("ages").value;
-            const plan = document.getElementById("plan").value;
-            const ages = agesInput.split(',').map(age => age.trim());
-
-            let result = "*Promoção 15% nas 03 primeiras mensalidades*\n\n";
-
-            if (plan === "nosso_plano") {
-                result += "*Nosso plano (completo):* Ele dá direito a urgência e emergência, consultas, exames, internações e cirurgias em toda rede Hapvida (Hapclínicas, laboratórios e Hospitais do Hapvida)\n\n";
-                result += "**Com coparticipação**\n";
-                ages.forEach(age => {
-                    result += `${age} anos / R$ ${getNossoPlanoCoparticipacao(age)}\n`;
-                });
-                result += `Total R$ ${calculateTotal(ages, getNossoPlanoCoparticipacao)}\n\n`;
-                
-                result += "**Sem coparticipação**\n";
-                ages.forEach(age => {
-                    result += `${age} anos / R$ ${getNossoPlanoSemCoparticipacao(age)}\n`;
-                });
-                result += `Total R$ ${calculateTotal(ages, getNossoPlanoSemCoparticipacao)}\n\n`;
+<script>
+    const planos = {
+        "empresarial": {
+            "com": {
+                "00 a 18": 116.52,
+                "19 a 23": 130.90,
+                "24 a 28": 146.16,
+                "29 a 33": 168.08,
+                "34 a 38": 193.29,
+                "39 a 43": 230.02,
+                "44 a 48": 287.52,
+                "49 a 53": 359.41,
+                "54 a 58": 610.99,
+                "59+": 684.31
+            },
+            "sem": {
+                "00 a 18": 149.08,
+                "19 a 23": 166.97,
+                "24 a 28": 187.01,
+                "29 a 33": 215.06,
+                "34 a 38": 247.32,
+                "39 a 43": 294.30,
+                "44 a 48": 367.88,
+                "49 a 53": 459.85,
+                "54 a 58": 781.75,
+                "59+": 875.55
             }
-
-            if (plan === "ambulatorial") {
-                result += "**AMBULATORIAL**\n\n";
-                result += "*Plano AMBULATORIAL:* Este plano oferece cobertura para consultas, exames, urgência e emergência, mas não cobre internações nem cirurgias eletivas.\n\n";
-
-                result += "**Com coparticipação**\n";
-                ages.forEach(age => {
-                    result += `${age} anos / R$ ${getAmbulatorialCoparticipacao(age)}\n`;
-                });
-                result += `Total R$ ${calculateTotal(ages, getAmbulatorialCoparticipacao)}\n\n`;
-
-                result += "**Sem coparticipação**\n";
-                ages.forEach(age => {
-                    result += `${age} anos / R$ ${getAmbulatorialSemCoparticipacao(age)}\n`;
-                });
-                result += `Total R$ ${calculateTotal(ages, getAmbulatorialSemCoparticipacao)}\n\n`;
+        },
+        "individual": {
+            "com": {
+                "00 a 18": 152.80,
+                "19 a 23": 195.29,
+                "24 a 28": 221.57,
+                "29 a 33": 245.75,
+                "34 a 38": 257.04,
+                "39 a 43": 287.85,
+                "44 a 48": 346.77,
+                "49 a 53": 470.92,
+                "54 a 58": 628.72,
+                "59+": 811.32
+            },
+            "sem": {
+                "00 a 18": 186.00,
+                "19 a 23": 239.10,
+                "24 a 28": 271.96,
+                "29 a 33": 302.18,
+                "34 a 38": 316.29,
+                "39 a 43": 354.81,
+                "44 a 48": 428.45,
+                "49 a 53": 583.64,
+                "54 a 58": 780.90,
+                "59+": 1009.16
             }
+        }
+    };
 
-            document.getElementById("resultText").textContent = result;
+    function calcularValor() {
+        const planoSelect = document.getElementById("planoSelect").value;
+        const coparticipacaoSelect = document.getElementById("coparticipacaoSelect").value;
+        const idade = parseInt(document.getElementById("idadeInput").value);
+
+        if (isNaN(idade) || idade < 0 || idade > 120) {
+            alert("Por favor, insira uma idade válida.");
+            return;
         }
 
-        function calculateTotal(ages, getPriceFunction) {
-            return ages.reduce((total, age) => total + parseFloat(getPriceFunction(age)), 0).toFixed(2);
-        }
+        let faixaEtaria = "";
+        if (idade <= 18) faixaEtaria = "00 a 18";
+        else if (idade <= 23) faixaEtaria = "19 a 23";
+        else if (idade <= 28) faixaEtaria = "24 a 28";
+        else if (idade <= 33) faixaEtaria = "29 a 33";
+        else if (idade <= 38) faixaEtaria = "34 a 38";
+        else if (idade <= 43) faixaEtaria = "39 a 43";
+        else if (idade <= 48) faixaEtaria = "44 a 48";
+        else if (idade <= 53) faixaEtaria = "49 a 53";
+        else if (idade <= 58) faixaEtaria = "54 a 58";
+        else faixaEtaria = "59+";
 
-        function getNossoPlanoCoparticipacao(age) {
-            if (age >= 0 && age <= 18) return 116.52;
-            if (age >= 19 && age <= 23) return 130.50;
-            if (age >= 24 && age <= 28) return 146.16;
-            if (age >= 29 && age <= 33) return 168.08;
-            if (age >= 34 && age <= 38) return 193.29;
-            if (age >= 39 && age <= 43) return 230.02;
-            if (age >= 44 && age <= 48) return 287.52;
-            if (age >= 49 && age <= 53) return 359.42;
-            if (age >= 54 && age <= 58) return 610.99;
-            return 684.31;
-        }
-
-        function getNossoPlanoSemCoparticipacao(age) {
-            if (age >= 0 && age <= 18) return 149.08;
-            if (age >= 19 && age <= 23) return 166.97;
-            if (age >= 24 && age <= 28) return 187.97;
-            if (age >= 29 && age <= 33) return 215.06;
-            if (age >= 34 && age <= 38) return 247.32;
-            if (age >= 39 && age <= 43) return 294.30;
-            if (age >= 44 && age <= 48) return 367.88;
-            if (age >= 49 && age <= 53) return 459.85;
-            if (age >= 54 && age <= 58) return 781.75;
-            return 875.55;
-        }
-
-        function getAmbulatorialCoparticipacao(age) {
-            if (age >= 0 && age <= 18) return 81.63;
-            if (age >= 19 && age <= 23) return 91.42;
-            if (age >= 24 && age <= 28) return 102.39;
-            if (age >= 29 && age <= 33) return 117.75;
-            if (age >= 34 && age <= 38) return 135.41;
-            if (age >= 39 && age <= 43) return 161.14;
-            if (age >= 44 && age <= 48) return 201.43;
-            if (age >= 49 && age <= 53) return 251.80;
-            if (age >= 54 && age <= 58) return 428.05;
-            return 479.42;
-        }
-
-        function getAmbulatorialSemCoparticipacao(age) {
-            if (age >= 0 && age <= 18) return 110.53;
-            if (age >= 19 && age <= 23) return 123.79;
-            if (age >= 24 && age <= 28) return 138.64;
-            if (age >= 29 && age <= 33) return 159.44;
-            if (age >= 34 && age <= 38) return 183.36;
-            if (age >= 39 && age <= 43) return 218.20;
-            if (age >= 44 && age <= 48) return 272.76;
-            if (age >= 49 && age <= 53) return 340.94;
-            if (age >= 54 && age <= 58) return 579.61;
-            return 649.16;
-        }
-
-        function copyToClipboard() {
-            const text = document.getElementById("resultText").textContent;
-            navigator.clipboard.writeText(text).then(() => {
-                alert("Texto copiado para a área de transferência!");
-            });
-        }
-    </script>
+        const valorPlano = planos[planoSelect][coparticipacaoSelect][faixaEtaria];
+        
+        document.getElementById("result").innerHTML = `
+            <h3>Valor do plano:</h3>
+            <p>Plano: ${planoSelect.charAt(0).toUpperCase() + planoSelect.slice(1)} - ${coparticipacaoSelect === 'com' ? 'Com coparticipação' : 'Sem coparticipação'}</p>
+            <p>Faixa Etária: ${faixaEtaria}</p>
+            <p><strong>R$ ${valorPlano.toFixed(2)}</strong></p>
+        `;
+    }
+</script>
 
 </body>
 </html>
