@@ -1,175 +1,168 @@
 
-<!DOCTYPE html><html lang="pt-br">
+<!DOCTYPE html><html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calculadora de Planos</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador de Plano de Saúde</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 20px;
-      background-color: #f7f7f7;
-    }
-    h1 {
-      text-align: center;
-    }
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    textarea {
-      width: 100%;
-      height: 100px;
-      margin-top: 10px;
-      margin-bottom: 20px;
-      padding: 10px;
-      font-size: 16px;
-    }
-    button {
-      margin: 5px 5px 15px 0;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover {
-      opacity: 0.9;
-    }
-    .btn-primary {
-      background-color: #007BFF;
-      color: #fff;
-    }
-    .btn-secondary {
-      background-color: #6C757D;
-      color: #fff;
-    }
-    .result {
-      white-space: pre-wrap;
       background-color: #f0f0f0;
-      padding: 15px;
-      border-radius: 5px;
+      padding: 20px;
+      margin: 0;
     }
-    .section-title {
+    h2 {
+      margin-bottom: 10px;
+    }
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .button-group button {
+      padding: 10px 15px;
+      border: 1px solid #ccc;
+      background-color: white;
+      color: black;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .button-group button.selected {
+      background-color: #007bff;
+      color: white;
+    }
+    textarea, button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    #result {
+      white-space: pre-wrap;
+      background-color: #fff;
+      padding: 15px;
       margin-top: 20px;
-      font-weight: bold;
+      border-radius: 5px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Calculadora de Planos</h1><label for="tipoPlano">Tipo de plano:</label><br>
-<button class="btn-primary" onclick="selecionarTipo('individual')">Individual</button>
-<button class="btn-primary" onclick="selecionarTipo('empresarial')">Empresarial</button>
+  <h2>Tipo de Plano</h2>
+  <div class="button-group" id="tipo-plano">
+    <button onclick="selectOption(this, 'tipoPlano', 'individual')">Individual</button>
+    <button onclick="selectOption(this, 'tipoPlano', 'empresarial')">Empresarial</button>
+  </div>  <h2>Escolha a Cobertura</h2>
+  <div class="button-group" id="cobertura">
+    <button onclick="selectOption(this, 'plano', 'nosso')">Nosso plano</button>
+    <button onclick="selectOption(this, 'plano', 'ambulatorial')">Ambulatorial</button>
+  </div>  <h2>Digite as idades separadas por vírgula</h2>
+  <textarea id="idades" rows="3" placeholder="Exemplo: 25, 30, 40"></textarea><button onclick="calcular()" style="margin-top: 15px;">Calcular</button> <button onclick="copiarResultado()" style="margin-top: 10px;">Copiar Resultado</button>
 
-<br><br>
+  <div id="result"></div>  <script>
+    let tipoPlano = '';
+    let plano = '';
 
-<label for="cobertura">Cobertura:</label><br>
-<button class="btn-secondary" onclick="selecionarCobertura('nosso')">Nosso plano</button>
-<button class="btn-secondary" onclick="selecionarCobertura('ambulatorial')">Ambulatorial</button>
+    function selectOption(button, tipo, valor) {
+      const grupo = tipo === 'tipoPlano' ? document.getElementById('tipo-plano') : document.getElementById('cobertura');
+      [...grupo.children].forEach(btn => btn.classList.remove('selected'));
+      button.classList.add('selected');
 
-<br><br>
-
-<label>Digite as idades (separadas por vírgula):</label>
-<textarea id="idades" placeholder="Exemplo: 20, 34, 58"></textarea>
-
-<button class="btn-primary" onclick="calcular()">Calcular</button>
-<button class="btn-secondary" onclick="copiarResultado()">Copiar Resultado</button>
-
-<div id="resultado" class="result"></div>
-
-  </div>  <script>
-    let tipoPlano = 'individual';
-    let cobertura = 'nosso';
-
-    function selecionarTipo(tipo) {
-      tipoPlano = tipo;
+      if (tipo === 'tipoPlano') tipoPlano = valor;
+      if (tipo === 'plano') plano = valor;
     }
 
-    function selecionarCobertura(cob) {
-      cobertura = cob;
+    function getValores(tipoPlano, plano) {
+      const valores = {
+        individual: {
+          nosso: {
+            coparticipacao: [100, 110, 120, 130, 140, 150, 160, 170, 180, 200],
+            semCoparticipacao: [150, 160, 170, 180, 190, 200, 210, 220, 230, 250]
+          },
+          ambulatorial: {
+            coparticipacao: [90, 100, 110, 120, 130, 140, 150, 160, 170, 190],
+            semCoparticipacao: [140, 150, 160, 170, 180, 190, 200, 210, 220, 240]
+          }
+        },
+        empresarial: {
+          nosso: {
+            coparticipacao: [80, 90, 100, 110, 120, 130, 140, 150, 160, 180],
+            semCoparticipacao: [130, 140, 150, 160, 170, 180, 190, 200, 210, 230]
+          },
+          ambulatorial: {
+            coparticipacao: [70, 80, 90, 100, 110, 120, 130, 140, 150, 170],
+            semCoparticipacao: [120, 130, 140, 150, 160, 170, 180, 190, 200, 220]
+          }
+        }
+      };
+      return valores[tipoPlano][plano];
     }
 
-    const valores = {
-      individual: {
-        nosso: {
-          total: [50, 55, 60, 65, 70, 75, 80, 85, 90, 95],
-          parcial: [60, 65, 70, 75, 80, 85, 90, 95, 100]
-        },
-        ambulatorial: {
-          total: [30, 35, 40, 45, 50, 55, 60, 65, 70, 75],
-          parcial: [40, 45, 50, 55, 60, 65, 70, 75, 80]
-        }
-      },
-      empresarial: {
-        nosso: {
-          total: [45, 50, 55, 60, 65, 70, 75, 80, 85, 90],
-          parcial: [55, 60, 65, 70, 75, 80, 85, 90, 95]
-        },
-        ambulatorial: {
-          total: [25, 30, 35, 40, 45, 50, 55, 60, 65, 70],
-          parcial: [35, 40, 45, 50, 55, 60, 65, 70, 75]
-        }
-      }
-    };
+    function calcularFaixaEtaria(idade) {
+      if (idade <= 18) return 0;
+      if (idade <= 23) return 1;
+      if (idade <= 28) return 2;
+      if (idade <= 33) return 3;
+      if (idade <= 38) return 4;
+      if (idade <= 43) return 5;
+      if (idade <= 48) return 6;
+      if (idade <= 53) return 7;
+      if (idade <= 58) return 8;
+      return 9;
+    }
 
     function calcular() {
-      const input = document.getElementById('idades').value;
-      const idades = input.split(',').map(i => parseInt(i.trim())).filter(i => !isNaN(i));
-
-      const faixaEtaria = [18, 23, 28, 33, 38, 43, 48, 53, 58];
-
-      let totalTotal = 0;
-      let totalParcial = 0;
-
-      let resTotal = "\nCom coparticipação\n";
-      let resParcial = "\nSem coparticipação\n";
-
-      idades.forEach(idade => {
-        let idx = faixaEtaria.findIndex(limite => idade <= limite);
-        if (idx === -1) idx = faixaEtaria.length;
-
-        const precoTotal = valores[tipoPlano][cobertura].total[idx];
-        const precoParcial = valores[tipoPlano][cobertura].parcial[idx];
-
-        resTotal += `${idade} anos / R$ ${precoTotal.toFixed(2)}\n`;
-        resParcial += `${idade} anos / R$ ${precoParcial.toFixed(2)}\n`;
-
-        totalTotal += precoTotal;
-        totalParcial += precoParcial;
-      });
-
-      const header = gerarCabecalho(tipoPlano, cobertura);
-
-      document.getElementById('resultado').innerText =
-        `${header}\n${resTotal}Total: R$ ${totalTotal.toFixed(2)}\n\n${resParcial}Total: R$ ${totalParcial.toFixed(2)}`;
-    }
-
-    function gerarCabecalho(tipo, plano) {
-      let titulo = tipo === 'individual' ? 'Plano Individual – ' : 'Plano Empresarial – ';
-      titulo += plano === 'nosso' ? 'Nosso plano' : 'Ambulatorial';
-
-      let descricao = "\n\nPromoção 15% nas 03 primeiras mensalidades\n\n";
-      if (plano === 'nosso') {
-        descricao += tipo === 'individual'
-          ? "Nosso plano (completo): Ele dá direito a urgência e emergência, consultas, exames, internações e cirurgias em toda rede Hapvida (Hapclínicas, laboratórios e Hospitais do Hapvida) E odonto completo.\n"
-          : "Nosso plano (completo): Ele dá direito a urgência e emergência, consultas, exames, internações e cirurgias em toda rede Hapvida (Hapclínicas, laboratórios e Hospitais do Hapvida). (Odontológico opcional)\n";
-      } else {
-        descricao += tipo === 'individual'
-          ? "Nosso plano (completo): Ele dá direito a urgência e emergência, consultas, exames e odonto de emergência.\n"
-          : "Nosso plano (completo): Ele dá direito a urgência e emergência, consultas, exames. (Odonto opcional)\n";
+      if (!tipoPlano || !plano) {
+        alert('Selecione o tipo de plano e a cobertura.');
+        return;
       }
 
-      return `${titulo}${descricao}`;
+      const textoIdades = document.getElementById('idades').value;
+      const idades = textoIdades.split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v));
+      const valores = getValores(tipoPlano, plano);
+      let resultado = '';
+
+      const headers = {
+        individual: {
+          nosso: `Plano Individual – Nosso plano\n\nPromoção 15% nas 03 primeiras mensalidades\n\nNosso plano (completo): Ele dá direito a urgência e emergência, consultas, exames, internações e cirurgias em toda rede Hapvida (Hapclínicas, laboratórios e Hospitais do Hapvida) E odonto completo.\n`,
+          ambulatorial: `Plano Individual – Ambulatorial\n\nPromoção 15% nas 03 primeiras mensalidades\n\nNosso plano (completo): Ele dá direito a urgência e emergência, consultas, exames e odonto de emergência.\n`
+        },
+        empresarial: {
+          nosso: `Plano Empresarial – Nosso plano\n\nPromoção 15% nas 03 primeiras mensalidades\n\nNosso plano (completo): Ele dá direito a urgência e emergência, consultas, exames, internações e cirurgias em toda rede Hapvida (Hapclínicas, laboratórios e Hospitais do Hapvida). (Odontológico opcional)\n`,
+          ambulatorial: `Plano Empresarial – Ambulatorial\n\nPromoção 15% nas 03 primeiras mensalidades\n\nNosso plano (completo): Ele dá direito a urgência e emergência, consultas, exames. (Odonto opcional)\n`
+        }
+      };
+
+      resultado += headers[tipoPlano][plano] + '\n';
+
+      let totalCopart = 0;
+      let totalSemCopart = 0;
+      resultado += 'Com coparticipação\n\n';
+      idades.forEach(idade => {
+        const faixa = calcularFaixaEtaria(idade);
+        const valor = valores.coparticipacao[faixa];
+        totalCopart += valor;
+        resultado += `${idade} anos / R$ ${valor.toFixed(2)}\n`;
+      });
+      resultado += `Total: R$ ${totalCopart.toFixed(2)}\n\n`;
+
+      resultado += 'Sem coparticipação\n\n';
+      idades.forEach(idade => {
+        const faixa = calcularFaixaEtaria(idade);
+        const valor = valores.semCoparticipacao[faixa];
+        totalSemCopart += valor;
+        resultado += `${idade} anos / R$ ${valor.toFixed(2)}\n`;
+      });
+      resultado += `Total: R$ ${totalSemCopart.toFixed(2)}`;
+
+      document.getElementById('result').textContent = resultado;
     }
 
     function copiarResultado() {
-      const texto = document.getElementById('resultado').innerText;
-      navigator.clipboard.writeText(texto).then(() => alert("Resultado copiado!"));
+      const texto = document.getElementById('result').textContent;
+      navigator.clipboard.writeText(texto).then(() => alert('Resultado copiado!'));
     }
   </script></body>
 </html>
