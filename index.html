@@ -1,162 +1,177 @@
 
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <title>Contador de Planos Hapvida</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f7f7f7;
-            color: #333;
-            padding: 20px;
-        }
-        h1 {
-            color: orange;
-        }
-        h2 {
-            color: navy;
-        }
-        select, input[type="text"], button {
-            padding: 10px;
-            margin: 10px 0;
-            font-size: 16px;
-        }
-        button {
-            background-color: navy;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #003366;
-        }
-        pre {
-            background-color: #eee;
-            padding: 15px;
-            border-radius: 5px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contador de Planos Hapvida</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 10px;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      color: orange;
+      text-align: center;
+    }
+    h2 {
+      color: #003366;
+      text-align: center;
+      margin-top: -10px;
+    }
+    label, select, input, button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    textarea {
+      width: 100%;
+      height: 300px;
+      margin-top: 15px;
+      white-space: pre-wrap;
+    }
+    button {
+      padding: 10px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 <body>
-    <h1>Contador de Planos Hapvida</h1>
-    <h2>EQUIPE ALPHA A MELHOR</h2>
+  <h1>Contador de Planos Hapvida</h1>
+  <h2>EQUIPE ALPHA A MELHOR</h2>
 
-    <label for="tipoPlano">Tipo de plano:</label>
-    <select id="tipoPlano">
-        <option value="individual">Individual</option>
-        <option value="empresarial">Empresarial</option>
-    </select>
+  <label for="tipoPlano">Tipo de plano:</label>
+  <select id="tipoPlano">
+    <option value="individual">Individual</option>
+    <option value="empresarial">Empresarial</option>
+  </select>
 
-    <label for="tipoSubplano">Subtipo de plano:</label>
-    <select id="tipoSubplano">
-        <option value="nosso">Nosso Plano</option>
-        <option value="ambulatorial">Ambulatorial</option>
-    </select>
+  <label for="plano">Plano:</label>
+  <select id="plano">
+    <option value="nosso">Nosso plano</option>
+    <option value="ambulatorial">Ambulatorial</option>
+  </select>
 
-    <label for="idades">Digite as idades (separadas por vírgulas):</label>
-    <input type="text" id="idades" placeholder="Ex: 23, 34, 45">
+  <label for="idades">Digite as idades (separadas por vírgula):</label>
+  <input type="text" id="idades" placeholder="Ex: 18, 25, 32" />
 
-    <button onclick="simular()">Simular</button>
+  <button onclick="calcular()">Calcular</button>
+  <button onclick="copiarResultado()">Copiar Resultado</button>
 
-    <pre id="resultado"></pre>
+  <textarea id="resultado" readonly></textarea>
 
-    <script>
-        const precos = {
-            individual: {
-                nosso: {
-                    com: [152.80,195.29,221.57,245.75,257.04,287.85,346.77,470.92,628.72,811.32],
-                    sem: [186.00,239.10,271.96,302.18,316.29,354.81,428.45,583.64,780.90,1009.16]
-                },
-                ambulatorial: {
-                    com: [99.71,130.90,149.04,166.11,174.74,196.02,239.41,331.55,446.49,579.49],
-                    sem: [155.18,204.28,232.84,259.72,273.32,306.82,375.14,520.22,701.19,910.61]
-                }
-            },
-            empresarial: {
-                nosso: {
-                    com: [116.52,130.90,146.16,168.08,193.29,230.02,287.52,359.41,610.99,684.31],
-                    sem: [149.08,166.97,187.01,215.06,247.32,294.30,367.88,459.85,781.75,875.55]
-                },
-                ambulatorial: {
-                    com: [81.63,91.42,102.39,117.75,135.41,161.14,201.43,251.80,428.05,479.42],
-                    sem: [110.53,123.79,138.64,159.44,183.36,218.20,272.76,340.94,579.61,649.16]
-                }
-            }
-        };
-
-        function faixaEtaria(idade) {
-            if (idade <= 18) return 0;
-            if (idade <= 23) return 1;
-            if (idade <= 28) return 2;
-            if (idade <= 33) return 3;
-            if (idade <= 38) return 4;
-            if (idade <= 43) return 5;
-            if (idade <= 48) return 6;
-            if (idade <= 53) return 7;
-            if (idade <= 58) return 8;
-            return 9;
+  <script>
+    const tabelas = {
+      individual: {
+        nosso: {
+          titulo: 'Nosso plano (completo): Ele dá direito a urgência e emergência, consultas, exames, internações e cirurgias em toda rede Hapvida (Hapclínicas, laboratórios e Hospitais do Hapvida)',
+          com: [
+            [18, 152.80], [23, 195.29], [28, 221.57], [33, 245.75],
+            [38, 257.04], [43, 287.85], [48, 346.77], [53, 470.92],
+            [58, 628.72], [200, 811.32]
+          ],
+          sem: [
+            [18, 186.00], [23, 239.10], [28, 271.96], [33, 302.18],
+            [38, 316.29], [43, 354.81], [48, 428.45], [53, 583.64],
+            [58, 780.90], [200, 1009.16]
+          ]
+        },
+        ambulatorial: {
+          titulo: 'Plano Ambulatorial: Ele dá direito a urgência e emergência, consultas, exames e odonto de emergência',
+          com: [
+            [18, 99.71], [23, 130.90], [28, 149.04], [33, 166.11],
+            [38, 174.74], [43, 196.02], [48, 239.41], [53, 331.55],
+            [58, 446.49], [200, 579.49]
+          ],
+          sem: [
+            [18, 155.18], [23, 204.28], [28, 232.84], [33, 259.72],
+            [38, 273.32], [43, 306.82], [48, 375.14], [53, 520.22],
+            [58, 701.19], [200, 910.61]
+          ]
         }
+      },
+      empresarial: {
+        nosso: {
+          titulo: 'Plano Empresarial – Nosso plano (COMPLETO)\nDá direito a urgência e emergência, consultas, exames, internações e cirurgias em toda rede Hapvida (Hapclínicas, laboratórios e Hospitais do Hapvida)',
+          com: [
+            [18, 116.52], [23, 130.90], [28, 146.16], [33, 168.08],
+            [38, 193.29], [43, 230.02], [48, 287.52], [53, 359.41],
+            [58, 610.99], [200, 684.31]
+          ],
+          sem: [
+            [18, 149.08], [23, 166.97], [28, 187.01], [33, 215.06],
+            [38, 247.32], [43, 294.30], [48, 367.88], [53, 459.85],
+            [58, 781.75], [200, 875.55]
+          ]
+        },
+        ambulatorial: {
+          titulo: 'Plano Empresarial – Ambulatorial\nDá direito a urgência e emergência, consultas, exames',
+          com: [
+            [18, 81.63], [23, 91.42], [28, 102.39], [33, 117.75],
+            [38, 135.41], [43, 161.14], [48, 201.43], [53, 251.80],
+            [58, 428.05], [200, 479.42]
+          ],
+          sem: [
+            [18, 110.53], [23, 123.79], [28, 138.64], [33, 159.44],
+            [38, 183.36], [43, 218.20], [48, 272.76], [53, 340.94],
+            [58, 579.61], [200, 649.16]
+          ]
+        }
+      }
+    };
 
-        function simular() {
-            const tipo = document.getElementById('tipoPlano').value;
-            const subtipo = document.getElementById('tipoSubplano').value;
-            const entrada = document.getElementById('idades').value;
-            const idades = entrada.split(',').map(e => parseInt(e.trim())).filter(Number.isInteger);
+    function buscarValor(tabela, idade) {
+      for (let [limite, valor] of tabela) {
+        if (idade <= limite) return valor;
+      }
+      return 0;
+    }
 
-            let com = '', totalCom = 0;
-            idades.forEach(idade => {
-                const preco = precos[tipo][subtipo].com[faixaEtaria(idade)];
-                com += `${idade} anos / R$ ${preco.toFixed(2)}
-`;
-                totalCom += preco;
-            });
+    function calcular() {
+      const tipo = document.getElementById("tipoPlano").value;
+      const plano = document.getElementById("plano").value;
+      const idadesInput = document.getElementById("idades").value;
+      const idades = idadesInput.split(',').map(i => parseInt(i.trim())).filter(i => !isNaN(i));
+      const dados = tabelas[tipo][plano];
 
-            let sem = '', totalSem = 0;
-            idades.forEach(idade => {
-                const preco = precos[tipo][subtipo].sem[faixaEtaria(idade)];
-                sem += `${idade} anos / R$ ${preco.toFixed(2)}
-`;
-                totalSem += preco;
-            });
+      let com = "", sem = "", totalCom = 0, totalSem = 0;
 
-            let descricao = subtipo === 'nosso'
-                ? 'Nosso plano (completo): Ele dá direito a urgência e emergência, consultas, exames, internações e cirurgias em toda rede Hapvida (Hapclínicas, laboratórios e Hospitais do Hapvida)'
-                : 'Plano Ambulatorial: Ele dá direito a urgência e emergência, consultas, exames e odonto de emergência';
+      idades.forEach(idade => {
+        const valorCom = buscarValor(dados.com, idade);
+        const valorSem = buscarValor(dados.sem, idade);
+        com += `${idade} anos / R$ ${valorCom.toFixed(2)}\n`;
+        sem += `${idade} anos / R$ ${valorSem.toFixed(2)}\n`;
+        totalCom += valorCom;
+        totalSem += valorSem;
+      });
 
-            document.getElementById('resultado').textContent =
-                `*Promoção 15% nas 03 primeiras mensalidades*
+      const texto = `${dados.titulo}
 
-` +
-                `*${descricao}*
-
-` +
-                `**Com coparticipação**
+**Com coparticipação**
 ${com}Total R$ ${totalCom.toFixed(2)}
 
-` +
-                `**Sem coparticipação**
-${sem}Total R$ ${totalSem.toFixed(2)}`;
-        }
-    </script>
+**Sem coparticipação**
+${sem}Total R$ ${totalSem.toFixed(2)}
+`;
 
-<button onclick="copiarResultado()" style="margin-top: 20px; background-color: #f97316; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">
-  Copiar Resultado
-</button>
+      document.getElementById("resultado").value = texto;
+    }
 
-<script>
-function copiarResultado() {
-  const resultado = document.getElementById('resultado');
-  if (resultado) {
-    const text = resultado.innerText;
-    navigator.clipboard.writeText(text).then(function() {
-      alert('Resultado copiado com sucesso!');
-    }, function(err) {
-      alert('Erro ao copiar o resultado: ' + err);
-    });
-  }
-}
-</script>
-
+    function copiarResultado() {
+      const resultado = document.getElementById("resultado");
+      resultado.select();
+      resultado.setSelectionRange(0, 99999);
+      document.execCommand("copy");
+      alert("Resultado copiado!");
+    }
+  </script>
 </body>
 </html>
