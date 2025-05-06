@@ -1,154 +1,103 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<!DOCTYPE html><html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Planos de Saúde</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-        }
-        select, button {
-            padding: 10px;
-            margin: 10px 0;
-            width: 100%;
-            font-size: 16px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-            border: 1px solid #ddd;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .result {
-            margin-top: 20px;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h1>Simulador de Planos de Saúde</h1>
-    <label for="planoSelect">Selecione o tipo de plano:</label>
-    <select id="planoSelect">
-        <option value="empresarial">Plano Empresarial</option>
-        <option value="individual">Plano Individual</option>
-    </select>
-
-    <label for="coparticipacaoSelect">Selecione o tipo de coparticipação:</label>
-    <select id="coparticipacaoSelect">
-        <option value="com">Com coparticipação</option>
-        <option value="sem">Sem coparticipação</option>
-    </select>
-
-    <label for="idadeInput">Informe a sua idade:</label>
-    <input type="number" id="idadeInput" min="0" max="120" placeholder="Digite sua idade" />
-
-    <button onclick="calcularValor()">Calcular</button>
-
-    <div class="result" id="result"></div>
-</div>
-
-<script>
-    const planos = {
-        "empresarial": {
-            "com": {
-                "00 a 18": 116.52,
-                "19 a 23": 130.90,
-                "24 a 28": 146.16,
-                "29 a 33": 168.08,
-                "34 a 38": 193.29,
-                "39 a 43": 230.02,
-                "44 a 48": 287.52,
-                "49 a 53": 359.41,
-                "54 a 58": 610.99,
-                "59+": 684.31
-            },
-            "sem": {
-                "00 a 18": 149.08,
-                "19 a 23": 166.97,
-                "24 a 28": 187.01,
-                "29 a 33": 215.06,
-                "34 a 38": 247.32,
-                "39 a 43": 294.30,
-                "44 a 48": 367.88,
-                "49 a 53": 459.85,
-                "54 a 58": 781.75,
-                "59+": 875.55
-            }
-        },
-        "individual": {
-            "com": {
-                "00 a 18": 152.80,
-                "19 a 23": 195.29,
-                "24 a 28": 221.57,
-                "29 a 33": 245.75,
-                "34 a 38": 257.04,
-                "39 a 43": 287.85,
-                "44 a 48": 346.77,
-                "49 a 53": 470.92,
-                "54 a 58": 628.72,
-                "59+": 811.32
-            },
-            "sem": {
-                "00 a 18": 186.00,
-                "19 a 23": 239.10,
-                "24 a 28": 271.96,
-                "29 a 33": 302.18,
-                "34 a 38": 316.29,
-                "39 a 43": 354.81,
-                "44 a 48": 428.45,
-                "49 a 53": 583.64,
-                "54 a 58": 780.90,
-                "59+": 1009.16
-            }
-        }
-    };
-
-    function calcularValor() {
-        const planoSelect = document.getElementById("planoSelect").value;
-        const coparticipacaoSelect = document.getElementById("coparticipacaoSelect").value;
-        const idade = parseInt(document.getElementById("idadeInput").value);
-
-        if (isNaN(idade) || idade < 0 || idade > 120) {
-            alert("Por favor, insira uma idade válida.");
-            return;
-        }
-
-        let faixaEtaria = "";
-        if (idade <= 18) faixaEtaria = "00 a 18";
-        else if (idade <= 23) faixaEtaria = "19 a 23";
-        else if (idade <= 28) faixaEtaria = "24 a 28";
-        else if (idade <= 33) faixaEtaria = "29 a 33";
-        else if (idade <= 38) faixaEtaria = "34 a 38";
-        else if (idade <= 43) faixaEtaria = "39 a 43";
-        else if (idade <= 48) faixaEtaria = "44 a 48";
-        else if (idade <= 53) faixaEtaria = "49 a 53";
-        else if (idade <= 58) faixaEtaria = "54 a 58";
-        else faixaEtaria = "59+";
-
-        const valorPlano = planos[planoSelect][coparticipacaoSelect][faixaEtaria];
-        
-        document.getElementById("result").innerHTML = `
-            <h3>Valor do plano:</h3>
-            <p>Plano: ${planoSelect.charAt(0).toUpperCase() + planoSelect.slice(1)} - ${coparticipacaoSelect === 'com' ? 'Com coparticipação' : 'Sem coparticipação'}</p>
-            <p>Faixa Etária: ${faixaEtaria}</p>
-            <p><strong>R$ ${valorPlano.toFixed(2)}</strong></p>
-        `;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contador de Planos Hapvida</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
     }
-</script>
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 {
+      font-size: 28px;
+    }
+    h2 {
+      color: #001F3F;
+      margin-top: -10px;
+    }
+    select, button, input[type="number"] {
+      padding: 12px;
+      margin: 10px 0;
+      width: 100%;
+      font-size: 16px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .result {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body><div class="container">
+  <h1>Contador de Planos Hapvida</h1>
+  <h2>EQUIPE ALPHA A MELHOR</h2><label for="planoSelect">Selecione o tipo de plano:</label> <select id="planoSelect"> <option value="empresarial">Plano Empresarial</option> <option value="individual">Plano Individual</option> </select>
 
-</body>
+<label for="tipoPlanoSelect">Selecione o plano:</label> <select id="tipoPlanoSelect"> <option value="nosso">Nosso plano</option> <option value="ambulatorial">Ambulatorial</option> </select>
+
+<label for="coparticipacaoSelect">Coparticipação:</label> <select id="coparticipacaoSelect"> <option value="com">Com coparticipação</option> <option value="sem">Sem coparticipação</option> </select>
+
+<label for="idadeInput">Informe a sua idade:</label> <input type="number" id="idadeInput" min="0" max="120" placeholder="Digite sua idade" style="height: 45px;" />
+
+<button onclick="calcularValor()">Calcular</button>
+
+  <div class="result" id="result"></div>
+</div><script>
+const tabelas = {
+  empresarial: {
+    nosso: {
+      com: [116.52, 130.90, 146.16, 168.08, 193.29, 230.02, 287.52, 359.41, 610.99, 684.31],
+      sem: [149.08, 166.97, 187.01, 215.06, 247.32, 294.30, 367.88, 459.85, 781.75, 875.55]
+    },
+    ambulatorial: {
+      com: [81.63, 91.42, 102.39, 117.75, 135.41, 161.14, 201.43, 251.80, 428.05, 479.42],
+      sem: [110.53, 123.79, 138.64, 159.44, 183.36, 218.20, 272.76, 340.94, 579.61, 649.16]
+    }
+  },
+  individual: {
+    nosso: {
+      com: [152.80, 195.29, 221.57, 245.75, 257.04, 287.85, 346.77, 470.92, 628.72, 811.32],
+      sem: [186.00, 239.10, 271.96, 302.18, 316.29, 354.81, 428.45, 583.64, 780.90, 1009.16]
+    },
+    ambulatorial: {
+      com: [99.71, 130.90, 149.04, 166.11, 174.74, 196.02, 239.41, 331.55, 446.49, 579.49],
+      sem: [155.18, 204.28, 232.84, 259.72, 273.32, 306.82, 375.14, 520.22, 701.19, 910.61]
+    }
+  }
+};
+
+const faixas = [18, 23, 28, 33, 38, 43, 48, 53, 58, Infinity];
+
+function calcularValor() {
+  const plano = document.getElementById("planoSelect").value;
+  const tipo = document.getElementById("tipoPlanoSelect").value;
+  const copart = document.getElementById("coparticipacaoSelect").value;
+  const idade = parseInt(document.getElementById("idadeInput").value);
+  const resultado = document.getElementById("result");
+
+  if (isNaN(idade)) {
+    resultado.innerHTML = "Por favor, informe uma idade válida.";
+    return;
+  }
+
+  let indice = faixas.findIndex(limite => idade <= limite);
+  let valor = tabelas[plano][tipo][copart][indice];
+
+  resultado.innerHTML = `<strong>Valor para ${idade} anos:</strong> R$ ${valor.toFixed(2).replace('.', ',')}`;
+}
+</script></body>
 </html>
