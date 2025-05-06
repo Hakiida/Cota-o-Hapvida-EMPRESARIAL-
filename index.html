@@ -1,168 +1,315 @@
 
-<!DOCTYPE html><html lang="pt-BR">
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador de Plano de Saúde</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
-      padding: 20px;
-      margin: 0;
-    }
-    h2 {
-      margin-bottom: 10px;
-    }
-    .button-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .button-group button {
-      padding: 10px 15px;
-      border: 1px solid #ccc;
-      background-color: white;
-      color: black;
-      cursor: pointer;
-      border-radius: 5px;
-      transition: background-color 0.3s, color 0.3s;
-    }
-    .button-group button.selected {
-      background-color: #007bff;
-      color: white;
-    }
-    textarea, button {
-      width: 100%;
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    #result {
-      white-space: pre-wrap;
-      background-color: #fff;
-      padding: 15px;
-      margin-top: 20px;
-      border-radius: 5px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Plano de Saúde</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin: 20px 0;
+        }
+
+        label {
+            font-size: 16px;
+            color: #333;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        select, input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:active {
+            background-color: #004085;
+        }
+
+        .result {
+            margin-top: 20px;
+            display: none;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+        }
+
+        .result table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .result th, .result td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .result th {
+            background-color: #f1f1f1;
+        }
+
+        .result td {
+            background-color: #ffffff;
+        }
+
+        .btn-copy {
+            margin-top: 20px;
+            background-color: #28a745;
+        }
+
+        .btn-copy:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body>
-  <h2>Tipo de Plano</h2>
-  <div class="button-group" id="tipo-plano">
-    <button onclick="selectOption(this, 'tipoPlano', 'individual')">Individual</button>
-    <button onclick="selectOption(this, 'tipoPlano', 'empresarial')">Empresarial</button>
-  </div>  <h2>Escolha a Cobertura</h2>
-  <div class="button-group" id="cobertura">
-    <button onclick="selectOption(this, 'plano', 'nosso')">Nosso plano</button>
-    <button onclick="selectOption(this, 'plano', 'ambulatorial')">Ambulatorial</button>
-  </div>  <h2>Digite as idades separadas por vírgula</h2>
-  <textarea id="idades" rows="3" placeholder="Exemplo: 25, 30, 40"></textarea><button onclick="calcular()" style="margin-top: 15px;">Calcular</button> <button onclick="copiarResultado()" style="margin-top: 10px;">Copiar Resultado</button>
 
-  <div id="result"></div>  <script>
-    let tipoPlano = '';
-    let plano = '';
+<div class="container">
+    <h1>Simulador de Plano de Saúde</h1>
 
-    function selectOption(button, tipo, valor) {
-      const grupo = tipo === 'tipoPlano' ? document.getElementById('tipo-plano') : document.getElementById('cobertura');
-      [...grupo.children].forEach(btn => btn.classList.remove('selected'));
-      button.classList.add('selected');
+    <div class="form-group">
+        <label for="plano">Selecione o Plano:</label>
+        <select id="plano">
+            <option value="individual">Plano Individual</option>
+            <option value="empresarial">Plano Empresarial</option>
+        </select>
+    </div>
 
-      if (tipo === 'tipoPlano') tipoPlano = valor;
-      if (tipo === 'plano') plano = valor;
-    }
+    <div class="form-group">
+        <label for="cobertura">Selecione a Cobertura:</label>
+        <select id="cobertura">
+            <option value="nossoPlano">Nosso plano</option>
+            <option value="ambulatorial">Ambulatorial</option>
+        </select>
+    </div>
 
-    function getValores(tipoPlano, plano) {
-      const valores = {
-        individual: {
-          nosso: {
-            coparticipacao: [100, 110, 120, 130, 140, 150, 160, 170, 180, 200],
-            semCoparticipacao: [150, 160, 170, 180, 190, 200, 210, 220, 230, 250]
-          },
-          ambulatorial: {
-            coparticipacao: [90, 100, 110, 120, 130, 140, 150, 160, 170, 190],
-            semCoparticipacao: [140, 150, 160, 170, 180, 190, 200, 210, 220, 240]
-          }
+    <div class="form-group">
+        <label for="idade">Informe a Idade:</label>
+        <input type="number" id="idade" placeholder="Idade">
+    </div>
+
+    <div class="form-group">
+        <button onclick="calcularPlano()">Calcular</button>
+    </div>
+
+    <div class="result" id="result">
+        <h3>Resultado:</h3>
+        <table id="resultTable">
+            <thead>
+                <tr>
+                    <th>Faixa Etária</th>
+                    <th>Com Coparticipação</th>
+                    <th>Sem Coparticipação</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Tabela de Resultados -->
+            </tbody>
+        </table>
+        <button class="btn-copy" onclick="copiarResultado()">Copiar Resultado</button>
+    </div>
+</div>
+
+<script>
+    const planos = {
+        "individual": {
+            "nossoPlano": {
+                comCoparticipacao: [
+                    { faixa: "00 a 18", valor: 152.80 },
+                    { faixa: "19 a 23", valor: 195.29 },
+                    { faixa: "24 a 28", valor: 221.57 },
+                    { faixa: "29 a 33", valor: 245.75 },
+                    { faixa: "34 a 38", valor: 257.04 },
+                    { faixa: "39 a 43", valor: 287.85 },
+                    { faixa: "44 a 48", valor: 346.77 },
+                    { faixa: "49 a 53", valor: 470.92 },
+                    { faixa: "54 a 58", valor: 628.72 },
+                    { faixa: "59+", valor: 811.32 }
+                ],
+                semCoparticipacao: [
+                    { faixa: "00 a 18", valor: 186.00 },
+                    { faixa: "19 a 23", valor: 239.10 },
+                    { faixa: "24 a 28", valor: 271.96 },
+                    { faixa: "29 a 33", valor: 302.18 },
+                    { faixa: "34 a 38", valor: 316.29 },
+                    { faixa: "39 a 43", valor: 354.81 },
+                    { faixa: "44 a 48", valor: 428.45 },
+                    { faixa: "49 a 53", valor: 583.64 },
+                    { faixa: "54 a 58", valor: 780.90 },
+                    { faixa: "59+", valor: 1.009,16 }
+                ]
+            },
+            "ambulatorial": {
+                comCoparticipacao: [
+                    { faixa: "00 a 18", valor: 99.71 },
+                    { faixa: "19 a 23", valor: 130.90 },
+                    { faixa: "24 a 28", valor: 149.04 },
+                    { faixa: "29 a 33", valor: 166.11 },
+                    { faixa: "34 a 38", valor: 174.74 },
+                    { faixa: "39 a 43", valor: 196.02 },
+                    { faixa: "44 a 48", valor: 239.41 },
+                    { faixa: "49 a 53", valor: 331.55 },
+                    { faixa: "54 a 58", valor: 446.49 },
+                    { faixa: "59+", valor: 579.49 }
+                ],
+                semCoparticipacao: [
+                    { faixa: "00 a 18", valor: 155.18 },
+                    { faixa: "19 a 23", valor: 204.28 },
+                    { faixa: "24 a 28", valor: 232.84 },
+                    { faixa: "29 a 33", valor: 259.72 },
+                    { faixa: "34 a 38", valor: 273.32 },
+                    { faixa: "39 a 43", valor: 306.82 },
+                    { faixa: "44 a 48", valor: 375.14 },
+                    { faixa: "49 a 53", valor: 520.22 },
+                    { faixa: "54 a 58", valor: 701.19 },
+                    { faixa: "59+", valor: 910.61 }
+                ]
+            }
         },
-        empresarial: {
-          nosso: {
-            coparticipacao: [80, 90, 100, 110, 120, 130, 140, 150, 160, 180],
-            semCoparticipacao: [130, 140, 150, 160, 170, 180, 190, 200, 210, 230]
-          },
-          ambulatorial: {
-            coparticipacao: [70, 80, 90, 100, 110, 120, 130, 140, 150, 170],
-            semCoparticipacao: [120, 130, 140, 150, 160, 170, 180, 190, 200, 220]
-          }
+        "empresarial": {
+            "nossoPlano": {
+                comCoparticipacao: [
+                    { faixa: "00 a 18", valor: 116.52 },
+                    { faixa: "19 a 23", valor: 130.50 },
+                    { faixa: "24 a 28", valor: 146.16 },
+                    { faixa: "29 a 33", valor: 168.08 },
+                    { faixa: "34 a 38", valor: 193.29 },
+                    { faixa: "39 a 43", valor: 230.02 },
+                    { faixa: "44 a 48", valor: 287.52 },
+                    { faixa: "49 a 53", valor: 359.41 },
+                    { faixa: "54 a 58", valor: 610.99 },
+                    { faixa: "59+", valor: 684.31 }
+                ],
+                semCoparticipacao: [
+                    { faixa: "00 a 18", valor: 149.08 },
+                    { faixa: "19 a 23", valor: 166.97 },
+                    { faixa: "24 a 28", valor: 187.01 },
+                    { faixa: "29 a 33", valor: 215.06 },
+                    { faixa: "34 a 38", valor: 247.32 },
+                    { faixa: "39 a 43", valor: 294.30 },
+                    { faixa: "44 a 48", valor: 367.88 },
+                    { faixa: "49 a 53", valor: 459.85 },
+                    { faixa: "54 a 58", valor: 781.75 },
+                    { faixa: "59+", valor: 875.55 }
+                ]
+            },
+            "ambulatorial": {
+                comCoparticipacao: [
+                    { faixa: "00 a 18", valor: 81.63 },
+                    { faixa: "19 a 23", valor: 91.42 },
+                    { faixa: "24 a 28", valor: 102.39 },
+                    { faixa: "29 a 33", valor: 117.75 },
+                    { faixa: "34 a 38", valor: 135.41 },
+                    { faixa: "39 a 43", valor: 161.14 },
+                    { faixa: "44 a 48", valor: 201.43 },
+                    { faixa: "49 a 53", valor: 251.80 },
+                    { faixa: "54 a 58", valor: 428.05 },
+                    { faixa: "59+", valor: 479.42 }
+                ],
+                semCoparticipacao: [
+                    { faixa: "00 a 18", valor: 110.53 },
+                    { faixa: "19 a 23", valor: 123.79 },
+                    { faixa: "24 a 28", valor: 138.64 },
+                    { faixa: "29 a 33", valor: 159.44 },
+                    { faixa: "34 a 38", valor: 183.36 },
+                    { faixa: "39 a 43", valor: 218.20 },
+                    { faixa: "44 a 48", valor: 272.76 },
+                    { faixa: "49 a 53", valor: 340.94 },
+                    { faixa: "54 a 58", valor: 579.61 },
+                    { faixa: "59+", valor: 649.16 }
+                ]
+            }
         }
-      };
-      return valores[tipoPlano][plano];
-    }
+    };
 
-    function calcularFaixaEtaria(idade) {
-      if (idade <= 18) return 0;
-      if (idade <= 23) return 1;
-      if (idade <= 28) return 2;
-      if (idade <= 33) return 3;
-      if (idade <= 38) return 4;
-      if (idade <= 43) return 5;
-      if (idade <= 48) return 6;
-      if (idade <= 53) return 7;
-      if (idade <= 58) return 8;
-      return 9;
-    }
+    function calcularPlano() {
+        const planoSelecionado = document.getElementById("plano").value;
+        const coberturaSelecionada = document.getElementById("cobertura").value;
+        const idade = parseInt(document.getElementById("idade").value);
 
-    function calcular() {
-      if (!tipoPlano || !plano) {
-        alert('Selecione o tipo de plano e a cobertura.');
-        return;
-      }
-
-      const textoIdades = document.getElementById('idades').value;
-      const idades = textoIdades.split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v));
-      const valores = getValores(tipoPlano, plano);
-      let resultado = '';
-
-      const headers = {
-        individual: {
-          nosso: `Plano Individual – Nosso plano\n\nPromoção 15% nas 03 primeiras mensalidades\n\nNosso plano (completo): Ele dá direito a urgência e emergência, consultas, exames, internações e cirurgias em toda rede Hapvida (Hapclínicas, laboratórios e Hospitais do Hapvida) E odonto completo.\n`,
-          ambulatorial: `Plano Individual – Ambulatorial\n\nPromoção 15% nas 03 primeiras mensalidades\n\nNosso plano (completo): Ele dá direito a urgência e emergência, consultas, exames e odonto de emergência.\n`
-        },
-        empresarial: {
-          nosso: `Plano Empresarial – Nosso plano\n\nPromoção 15% nas 03 primeiras mensalidades\n\nNosso plano (completo): Ele dá direito a urgência e emergência, consultas, exames, internações e cirurgias em toda rede Hapvida (Hapclínicas, laboratórios e Hospitais do Hapvida). (Odontológico opcional)\n`,
-          ambulatorial: `Plano Empresarial – Ambulatorial\n\nPromoção 15% nas 03 primeiras mensalidades\n\nNosso plano (completo): Ele dá direito a urgência e emergência, consultas, exames. (Odonto opcional)\n`
+        if (isNaN(idade) || idade < 0 || idade > 100) {
+            alert("Por favor, insira uma idade válida.");
+            return;
         }
-      };
 
-      resultado += headers[tipoPlano][plano] + '\n';
+        let faixaEtaria = '';
+        if (idade <= 18) faixaEtaria = "00 a 18";
+        else if (idade <= 23) faixaEtaria = "19 a 23";
+        else if (idade <= 28) faixaEtaria = "24 a 28";
+        else if (idade <= 33) faixaEtaria = "29 a 33";
+        else if (idade <= 38) faixaEtaria = "34 a 38";
+        else if (idade <= 43) faixaEtaria = "39 a 43";
+        else if (idade <= 48) faixaEtaria = "44 a 48";
+        else if (idade <= 53) faixaEtaria = "49 a 53";
+        else if (idade <= 58) faixaEtaria = "54 a 58";
+        else faixaEtaria = "59+";
 
-      let totalCopart = 0;
-      let totalSemCopart = 0;
-      resultado += 'Com coparticipação\n\n';
-      idades.forEach(idade => {
-        const faixa = calcularFaixaEtaria(idade);
-        const valor = valores.coparticipacao[faixa];
-        totalCopart += valor;
-        resultado += `${idade} anos / R$ ${valor.toFixed(2)}\n`;
-      });
-      resultado += `Total: R$ ${totalCopart.toFixed(2)}\n\n`;
+        const plano = planos[planoSelecionado][coberturaSelecionada];
+        const faixa = plano.comCoparticipacao.find(faixa => faixa.faixa === faixaEtaria);
 
-      resultado += 'Sem coparticipação\n\n';
-      idades.forEach(idade => {
-        const faixa = calcularFaixaEtaria(idade);
-        const valor = valores.semCoparticipacao[faixa];
-        totalSemCopart += valor;
-        resultado += `${idade} anos / R$ ${valor.toFixed(2)}\n`;
-      });
-      resultado += `Total: R$ ${totalSemCopart.toFixed(2)}`;
-
-      document.getElementById('result').textContent = resultado;
+        if (faixa) {
+            document.getElementById("result").style.display = "block";
+            document.getElementById("resultTable").getElementsByTagName("tbody")[0].innerHTML = `
+                <tr>
+                    <td>${faixaEtaria}</td>
+                    <td>R$ ${faixa.valor.toFixed(2)}</td>
+                    <td>R$ ${plano.semCoparticipacao.find(f => f.faixa === faixaEtaria).valor.toFixed(2)}</td>
+                </tr>
+            `;
+        } else {
+            alert("Não há plano disponível para essa faixa etária.");
+        }
     }
 
     function copiarResultado() {
-      const texto = document.getElementById('result').textContent;
-      navigator.clipboard.writeText(texto).then(() => alert('Resultado copiado!'));
+        const resultado = document.getElementById("resultTable").innerText;
+        navigator.clipboard.writeText(resultado).then(() => {
+            alert("Resultado copiado para a área de transferência.");
+        });
     }
-  </script></body>
-</html>
+</script>
+
+</body>
+</
