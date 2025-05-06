@@ -1,124 +1,173 @@
 
-<!DOCTYPE html><html lang="pt-br"><head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!DOCTYPE html><html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calculadora de Planos Hapvida</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head><body class="bg-blue-900 text-white min-h-screen flex flex-col items-center py-10 px-4">
-  <h1 class="text-3xl font-bold mb-2">Calculadora de Planos Hapvida</h1>
-  <h2 class="text-orange-400 font-semibold text-lg mb-6">EQUIPE ALPHA A MELHOR</h2>  <div class="flex flex-wrap justify-center gap-4 mb-4">
-    <div>
-      <p class="mb-1 font-semibold">Tipo de plano:</p>
-      <button class="btn-option" onclick="selectOption('tipoPlano', 'individual')">Individual</button>
-      <button class="btn-option" onclick="selectOption('tipoPlano', 'empresarial')">Empresarial</button>
-    </div><div>
-  <p class="mb-1 font-semibold">Cobertura:</p>
-  <button class="btn-option" onclick="selectOption('cobertura', 'nosso')">Nosso plano</button>
-  <button class="btn-option" onclick="selectOption('cobertura', 'ambulatorial')">Ambulatorial</button>
-</div>
-
-<div>
-  <p class="mb-1 font-semibold">Coparticipação:</p>
-  <button class="btn-option" onclick="selectOption('coparticipacao', 'total')">Total</button>
-  <button class="btn-option" onclick="selectOption('coparticipacao', 'parcial')">Parcial</button>
-</div>
-
-  </div>  <input id="idades" type="text" placeholder="Digite as idades separadas por vírgula" class="text-black px-4 py-2 rounded mb-4 w-full max-w-md" />  <div class="flex gap-4 mb-4">
-    <button onclick="calcular()" class="bg-white text-blue-900 font-semibold px-4 py-2 rounded hover:bg-blue-200">Calcular</button>
-    <button onclick="copiarResultado()" class="bg-white text-blue-900 font-semibold px-4 py-2 rounded hover:bg-blue-200">Copiar Resultado</button>
-  </div>  <div id="resultado" class="whitespace-pre-wrap text-left bg-white text-black p-4 rounded w-full max-w-2xl"></div>  <style>
-    .btn-option {
-      background-color: white;
-      color: #1e3a8a;
-      font-weight: 600;
-      padding: 0.5rem 1rem;
-      border-radius: 0.375rem;
-      margin-right: 0.5rem;
-      margin-bottom: 0.5rem;
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #001f3f;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
     }
-
-    .btn-option.active {
-      background-color: #3b82f6;
+    h1 {
+      margin-bottom: 5px;
+    }
+    h2 {
+      color: orange;
+      margin-top: 0;
+      font-size: 1.2em;
+    }
+    .button-group button {
+      background-color: white;
+      color: #001f3f;
+      border: none;
+      padding: 10px 15px;
+      margin: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 5px;
+    }
+    .button-group button.selected {
+      background-color: #007bff;
       color: white;
     }
-  </style>  <script>
-    const opcoes = {
-      tipoPlano: '',
-      cobertura: '',
-      coparticipacao: ''
-    };
+    #resultado {
+      margin-top: 20px;
+      white-space: pre-line;
+      text-align: left;
+      background-color: #f9f9f9;
+      color: #000;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    button#copiar {
+      margin-top: 10px;
+      background-color: white;
+      color: #001f3f;
+      border: none;
+      padding: 10px 15px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button#copiar:hover {
+      background-color: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Calculadora de Planos Hapvida</h1>
+  <h2>EQUIPE ALPHA A MELHOR</h2>  <div class="button-group">
+    <p>Tipo de plano:</p>
+    <button onclick="selecionarPlano('individual')">Individual</button>
+    <button onclick="selecionarPlano('empresarial')">Empresarial</button>
+  </div>  <div class="button-group">
+    <p>Tipo de cobertura:</p>
+    <button onclick="selecionarCobertura('nosso')">Nosso plano</button>
+    <button onclick="selecionarCobertura('ambulatorial')">Ambulatorial</button>
+  </div>  <div>
+    <input type="text" id="idades" placeholder="Digite as idades separadas por vírgula">
+    <button onclick="calcular()">Calcular</button>
+  </div>  <div id="resultado"></div>
+  <button id="copiar" onclick="copiarResultado()">Copiar Resultado</button>  <script>
+    let planoSelecionado = '';
+    let coberturaSelecionada = '';
 
-    function selectOption(tipo, valor) {
-      opcoes[tipo] = valor;
-      document.querySelectorAll(`button`).forEach(btn => {
-        if (btn.textContent.toLowerCase() === valor && btn.onclick.toString().includes(tipo)) {
-          btn.classList.add('active');
-        } else if (btn.onclick.toString().includes(tipo)) {
-          btn.classList.remove('active');
-        }
-      });
+    const botoesPlano = document.querySelectorAll(".button-group button");
+
+    function selecionarPlano(tipo) {
+      planoSelecionado = tipo;
+      atualizarSelecao();
+    }
+
+    function selecionarCobertura(tipo) {
+      coberturaSelecionada = tipo;
+      atualizarSelecao();
+    }
+
+    function atualizarSelecao() {
+      document.querySelectorAll('.button-group button').forEach(btn => btn.classList.remove('selected'));
+      if (planoSelecionado) document.querySelector(`button[onclick*="${planoSelecionado}"]`).classList.add('selected');
+      if (coberturaSelecionada) document.querySelector(`button[onclick*="${coberturaSelecionada}"]`).classList.add('selected');
     }
 
     const tabelas = {
       empresarial: {
         nosso: {
-          total: [116.52, 130.50, 146.16, 168.08, 193.29, 230.02, 287.52, 359.41, 610.99, 684.31],
-          parcial: [149.08, 166.97, 187.01, 215.06, 247.32, 294.30, 367.88, 459.85, 781.75, 875.55],
+          parcial: [116.52, 130.50, 146.16, 168.08, 193.29, 230.02, 287.52, 359.41, 610.99, 684.31],
+          total:   [149.08, 166.97, 187.01, 215.06, 247.32, 294.30, 367.88, 459.85, 781.75, 875.55]
         },
         ambulatorial: {
-          total: [81.63, 91.42, 102.39, 117.75, 135.41, 161.14, 201.43, 251.80, 428.05, 479.42],
-          parcial: [110.53, 123.79, 138.64, 159.44, 183.36, 218.20, 272.76, 340.94, 579.61, 649.16],
-        },
+          parcial: [81.63, 91.42, 102.39, 117.75, 135.41, 161.14, 201.43, 251.80, 428.05, 479.42],
+          total:   [110.53, 123.79, 138.64, 159.44, 183.36, 218.20, 272.76, 340.94, 579.61, 649.16]
+        }
       },
       individual: {
         nosso: {
-          total: [152.80, 195.29, 221.57, 245.75, 257.04, 287.85, 346.77, 470.92, 628.72, 811.32],
-          parcial: [186.00, 239.10, 271.96, 302.18, 316.29, 354.81, 428.45, 583.64, 780.90, 1009.16],
+          parcial: [152.80, 195.29, 221.57, 245.75, 257.04, 287.85, 346.77, 470.92, 628.72, 811.32],
+          total:   [186.00, 239.10, 271.96, 302.18, 316.29, 354.81, 428.45, 583.64, 780.90, 1009.16]
         },
         ambulatorial: {
-          total: [99.71, 130.90, 149.04, 166.11, 174.74, 196.02, 239.41, 331.55, 446.49, 579.49],
-          parcial: [155.18, 204.28, 232.84, 259.72, 273.32, 306.82, 375.14, 520.22, 701.19, 910.61],
-        },
-      },
+          parcial: [99.71, 130.90, 149.04, 166.11, 174.74, 196.02, 239.41, 331.55, 446.49, 579.49],
+          total:   [155.18, 204.28, 232.84, 259.72, 273.32, 306.82, 375.14, 520.22, 701.19, 910.61]
+        }
+      }
     };
 
-    const faixas = [18, 23, 28, 33, 38, 43, 48, 53, 58, 200];
+    function faixaEtaria(idade) {
+      if (idade <= 18) return 0;
+      if (idade <= 23) return 1;
+      if (idade <= 28) return 2;
+      if (idade <= 33) return 3;
+      if (idade <= 38) return 4;
+      if (idade <= 43) return 5;
+      if (idade <= 48) return 6;
+      if (idade <= 53) return 7;
+      if (idade <= 58) return 8;
+      return 9;
+    }
 
     function calcular() {
-      const { tipoPlano, cobertura, coparticipacao } = opcoes;
-      if (!tipoPlano || !cobertura || !coparticipacao) return alert('Selecione todas as opções.');
+      if (!planoSelecionado || !coberturaSelecionada) {
+        alert('Selecione o plano e a cobertura.');
+        return;
+      }
 
-      const tabela = tabelas[tipoPlano][cobertura][coparticipacao];
-      const idades = document.getElementById('idades').value.split(',').map(i => parseInt(i.trim())).filter(i => !isNaN(i));
+      const entrada = document.getElementById('idades').value;
+      const idades = entrada.split(',').map(i => parseInt(i.trim())).filter(n => !isNaN(n));
+      if (idades.length === 0) {
+        alert('Digite pelo menos uma idade válida.');
+        return;
+      }
 
-      let detalhes = idades.map(idade => {
-        let i = faixas.findIndex(f => idade <= f);
-        return `* ${idade} anos – R$ ${tabela[i].toFixed(2).replace('.', ',')}`;
-      });
+      const plano = tabelas[planoSelecionado][coberturaSelecionada];
+      const parcialValores = idades.map(i => plano.parcial[faixaEtaria(i)]);
+      const totalValores = idades.map(i => plano.total[faixaEtaria(i)]);
 
-      const total = idades.reduce((soma, idade) => {
-        let i = faixas.findIndex(f => idade <= f);
-        return soma + tabela[i];
-      }, 0);
+      let resultado = "*Promoção 15% nas 03 primeiras mensalidades*\n\n";
+      resultado += `*Plano ${planoSelecionado === 'individual' ? 'Individual' : 'Empresarial'} – ${coberturaSelecionada === 'nosso' ? 'Nosso plano (COMPLETO)' : 'Ambulatorial'}*\n`;
+      resultado += planoSelecionado === 'individual' && coberturaSelecionada === 'ambulatorial' ? 'Dá direito a urgência e emergência, consultas, exames, e odontologia de emergência.\n\n' :
+                   coberturaSelecionada === 'ambulatorial' ? 'Dá direito a urgência e emergência, consultas, exames.\n\n' :
+                   'Dá direito a urgência e emergência, consultas, exames, internações e cirurgias em toda rede Hapvida (Hapclínicas, laboratórios e Hospitais do Hapvida)\n\n';
 
-      const nomePlano = tipoPlano === 'individual' ? 'Plano Individual' : 'Plano Empresarial';
-      const nomeCobertura = cobertura === 'nosso' ? 'Nosso plano (COMPLETO)' : 'Ambulatorial';
-      const nomeCopart = coparticipacao === 'total' ? 'coparticipação total' : 'coparticipação parcial';
+      resultado += "**Coparticipação total**\n";
+      idades.forEach((idade, idx) => resultado += `${idade} anos / R$ ${parcialValores[idx].toFixed(2).replace('.', ',')}\n`);
+      resultado += `Total R$ ${parcialValores.reduce((a,b) => a+b, 0).toFixed(2).replace('.', ',')}\n\n`;
 
-      const resultado = `*Promoção 15% nas 03 primeiras mensalidades*
-
-${nomePlano} – ${nomeCobertura}
-Dá direito a urgência e emergência, consultas, exames${cobertura === 'nosso' ? ', internações e cirurgias em toda rede Hapvida (Hapclínicas, laboratórios e Hospitais do Hapvida)' : cobertura === 'ambulatorial' && tipoPlano === 'individual' ? ', e odontologia de emergência' : '.'}
-
-**${nomeCopart}**
-${detalhes.join('\n')}
-Total R$ ${total.toFixed(2).replace('.', ',')}`;
+      resultado += "**Coparticipação parcial**\n";
+      idades.forEach((idade, idx) => resultado += `${idade} anos / R$ ${totalValores[idx].toFixed(2).replace('.', ',')}\n`);
+      resultado += `Total R$ ${totalValores.reduce((a,b) => a+b, 0).toFixed(2).replace('.', ',')}`;
 
       document.getElementById('resultado').innerText = resultado;
     }
 
     function copiarResultado() {
-      const resultado = document.getElementById('resultado').innerText;
-      navigator.clipboard.writeText(resultado).then(() => alert('Resultado copiado!'));
+      const texto = document.getElementById('resultado').innerText;
+      navigator.clipboard.writeText(texto).then(() => alert('Resultado copiado!'));
     }
-  </script></body></html>
+  </script></body>
+</html>
