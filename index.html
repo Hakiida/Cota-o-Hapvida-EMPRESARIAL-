@@ -39,7 +39,7 @@
             margin-bottom: 5px;
         }
 
-        select, input[type="number"] {
+        select, input[type="text"] {
             width: 100%;
             padding: 10px;
             font-size: 16px;
@@ -126,8 +126,8 @@
     </div>
 
     <div class="form-group">
-        <label for="idade">Informe a Idade:</label>
-        <input type="number" id="idade" placeholder="Idade">
+        <label for="idade">Informe a(s) Idade(s) (separadas por vírgula):</label>
+        <input type="text" id="idade" placeholder="Idade(s)">
     </div>
 
     <div class="form-group">
@@ -244,21 +244,21 @@
                     { faixa: "34 a 38", valor: 135.41 },
                     { faixa: "39 a 43", valor: 161.14 },
                     { faixa: "44 a 48", valor: 201.43 },
-                    { faixa: "49 a 53", valor: 251.80 },
-                    { faixa: "54 a 58", valor: 428.05 },
-                    { faixa: "59+", valor: 479.42 }
+                    { faixa: "49 a 53", valor: 251.66 },
+                    { faixa: "54 a 58", valor: 332.27 },
+                    { faixa: "59+", valor: 426.34 }
                 ],
                 semCoparticipacao: [
-                    { faixa: "00 a 18", valor: 110.53 },
-                    { faixa: "19 a 23", valor: 123.79 },
-                    { faixa: "24 a 28", valor: 138.64 },
-                    { faixa: "29 a 33", valor: 159.44 },
-                    { faixa: "34 a 38", valor: 183.36 },
-                    { faixa: "39 a 43", valor: 218.20 },
-                    { faixa: "44 a 48", valor: 272.76 },
-                    { faixa: "49 a 53", valor: 340.94 },
-                    { faixa: "54 a 58", valor: 579.61 },
-                    { faixa: "59+", valor: 649.16 }
+                    { faixa: "00 a 18", valor: 109.30 },
+                    { faixa: "19 a 23", valor: 127.15 },
+                    { faixa: "24 a 28", valor: 147.53 },
+                    { faixa: "29 a 33", valor: 167.58 },
+                    { faixa: "34 a 38", valor: 191.05 },
+                    { faixa: "39 a 43", valor: 224.90 },
+                    { faixa: "44 a 48", valor: 273.66 },
+                    { faixa: "49 a 53", valor: 348.51 },
+                    { faixa: "54 a 58", valor: 464.31 },
+                    { faixa: "59+", valor: 599.57 }
                 ]
             }
         }
@@ -267,49 +267,48 @@
     function calcularPlano() {
         const planoSelecionado = document.getElementById("plano").value;
         const coberturaSelecionada = document.getElementById("cobertura").value;
-        const idade = parseInt(document.getElementById("idade").value);
+        const idades = document.getElementById("idade").value.split(',').map(age => parseInt(age.trim())).filter(age => !isNaN(age));
 
-        if (isNaN(idade) || idade < 0 || idade > 100) {
-            alert("Por favor, insira uma idade válida.");
-            return;
-        }
+        let tabelaCom = planos[planoSelecionado][coberturaSelecionada].comCoparticipacao;
+        let tabelaSem = planos[planoSelecionado][coberturaSelecionada].semCoparticipacao;
 
-        let faixaEtaria = '';
-        if (idade <= 18) faixaEtaria = "00 a 18";
-        else if (idade <= 23) faixaEtaria = "19 a 23";
-        else if (idade <= 28) faixaEtaria = "24 a 28";
-        else if (idade <= 33) faixaEtaria = "29 a 33";
-        else if (idade <= 38) faixaEtaria = "34 a 38";
-        else if (idade <= 43) faixaEtaria = "39 a 43";
-        else if (idade <= 48) faixaEtaria = "44 a 48";
-        else if (idade <= 53) faixaEtaria = "49 a 53";
-        else if (idade <= 58) faixaEtaria = "54 a 58";
-        else faixaEtaria = "59+";
+        let resultTable = document.getElementById("resultTable").getElementsByTagName('tbody')[0];
+        resultTable.innerHTML = "";  // Limpa resultados anteriores
 
-        const plano = planos[planoSelecionado][coberturaSelecionada];
-        const faixa = plano.comCoparticipacao.find(faixa => faixa.faixa === faixaEtaria);
+        let totalCom = 0;
+        let totalSem = 0;
 
-        if (faixa) {
-            document.getElementById("result").style.display = "block";
-            document.getElementById("resultTable").getElementsByTagName("tbody")[0].innerHTML = `
-                <tr>
-                    <td>${faixaEtaria}</td>
-                    <td>R$ ${faixa.valor.toFixed(2)}</td>
-                    <td>R$ ${plano.semCoparticipacao.find(f => f.faixa === faixaEtaria).valor.toFixed(2)}</td>
-                </tr>
-            `;
-        } else {
-            alert("Não há plano disponível para essa faixa etária.");
-        }
+        idades.forEach(idade => {
+            let faixa = tabelaCom.find(f => {
+                const faixaEtaria = f.faixa.split(' a ');
+                return idade >= parseInt(faixaEtaria[0]) && idade <= parseInt(faixaEtaria[1]);
+            });
+
+            if (faixa) {
+                totalCom += faixa.valor;
+                const linha = resultTable.insertRow();
+                linha.insertCell(0).innerText = faixa.faixa;
+                linha.insertCell(1).innerText = `R$ ${faixa.valor.toFixed(2)}`;
+                linha.insertCell(2).innerText = `R$ ${faixa.valor.toFixed(2)}`;
+            }
+        });
+
+        let total = resultTable.rows.length;
+        let resultDiv = document.getElementById("result");
+        resultDiv.style.display = "block";
     }
 
     function copiarResultado() {
-        const resultado = document.getElementById("resultTable").innerText;
-        navigator.clipboard.writeText(resultado).then(() => {
-            alert("Resultado copiado para a área de transferência.");
-        });
+        const resultText = document.getElementById("resultTable").outerHTML;
+        const textarea = document.createElement('textarea');
+        document.body.appendChild(textarea);
+        textarea.value = resultText;
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert("Resultado copiado para a área de transferência!");
     }
 </script>
 
 </body>
-</
+</html>
