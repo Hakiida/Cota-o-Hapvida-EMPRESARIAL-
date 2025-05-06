@@ -1,103 +1,75 @@
-<!DOCTYPE html><html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contador de Planos Hapvida</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    .container {
-      max-width: 800px;
-      margin: auto;
-    }
-    h1 {
-      font-size: 28px;
-    }
-    h2 {
-      color: #001F3F;
-      margin-top: -10px;
-    }
-    select, button, input[type="number"] {
-      padding: 12px;
-      margin: 10px 0;
-      width: 100%;
-      font-size: 16px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 20px 0;
-    }
-    th, td {
-      padding: 8px;
-      text-align: left;
-      border: 1px solid #ddd;
-    }
-    th {
-      background-color: #f2f2f2;
-    }
-    .result {
-      margin-top: 20px;
-    }
-  </style>
-</head>
-<body><div class="container">
-  <h1>Contador de Planos Hapvida</h1>
-  <h2>EQUIPE ALPHA A MELHOR</h2><label for="planoSelect">Selecione o tipo de plano:</label> <select id="planoSelect"> <option value="empresarial">Plano Empresarial</option> <option value="individual">Plano Individual</option> </select>
+import React, { useState } from "react"; import { Input } from "@/components/ui/input"; import { Button } from "@/components/ui/button"; import { Card, CardContent } from "@/components/ui/card";
 
-<label for="tipoPlanoSelect">Selecione o plano:</label> <select id="tipoPlanoSelect"> <option value="nosso">Nosso plano</option> <option value="ambulatorial">Ambulatorial</option> </select>
+const PLANS = { individual: { "nosso plano": { descricao: "Nosso plano (completo): Ele dá direito a urgência e emergência, consultas, exames, internações e cirurgias em toda rede Hapvida (Hapclínicas, laboratórios e Hospitais do Hapvida). Inclui odonto completo.", com: [ 152.8, 195.29, 221.57, 245.75, 257.04, 287.85, 346.77, 470.92, 628.72, 811.32, ], sem: [ 186.0, 239.1, 271.96, 302.18, 316.29, 354.81, 428.45, 583.64, 780.9, 1009.16, ], }, ambulatorial: { descricao: "Plano Ambulatorial: Ele dá direito a urgência e emergência, consultas, exames e odonto de emergência", com: [ 99.71, 130.9, 149.04, 166.11, 174.74, 196.02, 239.41, 331.55, 446.49, 579.49, ], sem: [ 155.18, 204.28, 232.84, 259.72, 273.32, 306.82, 375.14, 520.22, 701.19, 910.61, ], }, }, empresarial: { "nosso plano": { descricao: "Nosso plano (completo): Dá direito a urgência e emergência, consultas, exames, internações e cirurgias em toda rede Hapvida (Hapclínicas, laboratórios e Hospitais do Hapvida)", com: [ 116.52, 130.9, 146.16, 168.08, 193.29, 230.02, 287.52, 359.41, 610.99, 684.31, ], sem: [ 149.08, 166.97, 187.01, 215.06, 247.32, 294.3, 367.88, 459.85, 781.75, 875.55, ], }, ambulatorial: { descricao: "Ambulatorial: Dá direito a urgência e emergência, consultas, exames", com: [ 81.63, 91.42, 102.39, 117.75, 135.41, 161.14, 201.43, 251.8, 428.05, 479.42, ], sem: [ 110.53, 123.79, 138.64, 159.44, 183.36, 218.2, 272.76, 340.94, 579.61, 649.16, ], }, }, };
 
-<label for="coparticipacaoSelect">Coparticipação:</label> <select id="coparticipacaoSelect"> <option value="com">Com coparticipação</option> <option value="sem">Sem coparticipação</option> </select>
+const getFaixaIndex = (idade) => { if (idade <= 18) return 0; if (idade <= 23) return 1; if (idade <= 28) return 2; if (idade <= 33) return 3; if (idade <= 38) return 4; if (idade <= 43) return 5; if (idade <= 48) return 6; if (idade <= 53) return 7; if (idade <= 58) return 8; return 9; };
 
-<label for="idadeInput">Informe a sua idade:</label> <input type="number" id="idadeInput" min="0" max="120" placeholder="Digite sua idade" style="height: 45px;" />
+export default function PlanoSaude() { const [idades, setIdades] = useState(""); const [tipo, setTipo] = useState("individual"); const [plano, setPlano] = useState("nosso plano"); const [resultado, setResultado] = useState("");
 
-<button onclick="calcularValor()">Calcular</button>
+const calcular = () => { const listaIdades = idades .split(",") .map((i) => parseInt(i.trim())) .filter((i) => !isNaN(i));
 
-  <div class="result" id="result"></div>
-</div><script>
-const tabelas = {
-  empresarial: {
-    nosso: {
-      com: [116.52, 130.90, 146.16, 168.08, 193.29, 230.02, 287.52, 359.41, 610.99, 684.31],
-      sem: [149.08, 166.97, 187.01, 215.06, 247.32, 294.30, 367.88, 459.85, 781.75, 875.55]
-    },
-    ambulatorial: {
-      com: [81.63, 91.42, 102.39, 117.75, 135.41, 161.14, 201.43, 251.80, 428.05, 479.42],
-      sem: [110.53, 123.79, 138.64, 159.44, 183.36, 218.20, 272.76, 340.94, 579.61, 649.16]
-    }
-  },
-  individual: {
-    nosso: {
-      com: [152.80, 195.29, 221.57, 245.75, 257.04, 287.85, 346.77, 470.92, 628.72, 811.32],
-      sem: [186.00, 239.10, 271.96, 302.18, 316.29, 354.81, 428.45, 583.64, 780.90, 1009.16]
-    },
-    ambulatorial: {
-      com: [99.71, 130.90, 149.04, 166.11, 174.74, 196.02, 239.41, 331.55, 446.49, 579.49],
-      sem: [155.18, 204.28, 232.84, 259.72, 273.32, 306.82, 375.14, 520.22, 701.19, 910.61]
-    }
-  }
+const planoSelecionado = PLANS[tipo][plano];
+
+let com = "";
+let totalCom = 0;
+listaIdades.forEach((idade) => {
+  const preco = planoSelecionado.com[getFaixaIndex(idade)];
+  totalCom += preco;
+  com += `* ${idade} anos / R$ ${preco.toFixed(2)}\n`;
+});
+
+let sem = "";
+let totalSem = 0;
+listaIdades.forEach((idade) => {
+  const preco = planoSelecionado.sem[getFaixaIndex(idade)];
+  totalSem += preco;
+  sem += `* ${idade} anos / R$ ${preco.toFixed(2)}\n`;
+});
+
+const textoFinal = `*Promoção 15% nas 03 primeiras mensalidades*\n\n${planoSelecionado.descricao}\n\n**Com coparticipação**\n${com}Total R$ ${totalCom.toFixed(2)}\n\n**Sem coparticipação**\n${sem}Total R$ ${totalSem.toFixed(2)}`;
+setResultado(textoFinal);
+
 };
 
-const faixas = [18, 23, 28, 33, 38, 43, 48, 53, 58, Infinity];
+return ( <div className="p-4 space-y-4"> <h1 className="text-3xl font-bold text-orange-600"> Contador de Planos Hapvida </h1> <h2 className="text-xl font-semibold text-blue-900">EQUIPE ALPHA A MELHOR</h2>
 
-function calcularValor() {
-  const plano = document.getElementById("planoSelect").value;
-  const tipo = document.getElementById("tipoPlanoSelect").value;
-  const copart = document.getElementById("coparticipacaoSelect").value;
-  const idade = parseInt(document.getElementById("idadeInput").value);
-  const resultado = document.getElementById("result");
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <Input
+      placeholder="Digite as idades separadas por vírgula"
+      value={idades}
+      onChange={(e) => setIdades(e.target.value)}
+    />
 
-  if (isNaN(idade)) {
-    resultado.innerHTML = "Por favor, informe uma idade válida.";
-    return;
-  }
+    <select
+      className="border rounded p-2"
+      value={tipo}
+      onChange={(e) => setTipo(e.target.value)}
+    >
+      <option value="individual">Individual</option>
+      <option value="empresarial">Empresarial</option>
+    </select>
 
-  let indice = faixas.findIndex(limite => idade <= limite);
-  let valor = tabelas[plano][tipo][copart][indice];
+    <select
+      className="border rounded p-2"
+      value={plano}
+      onChange={(e) => setPlano(e.target.value)}
+    >
+      <option value="nosso plano">Nosso plano</option>
+      <option value="ambulatorial">Ambulatorial</option>
+    </select>
 
-  resultado.innerHTML = `<strong>Valor para ${idade} anos:</strong> R$ ${valor.toFixed(2).replace('.', ',')}`;
-}
-</script></body>
-</html>
+    <Button onClick={calcular}>Calcular</Button>
+  </div>
+
+  {resultado && (
+    <Card>
+      <CardContent className="whitespace-pre-wrap p-4">
+        {resultado}
+      </CardContent>
+    </Card>
+  )}
+</div>
+
+); }
+
+  
