@@ -1,203 +1,211 @@
 
-<!DOCTYPE html><html lang="pt-Bt">
-<head>
+<!DOCTYPE html><html lang="pt-BR"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador Hapvida</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    label, select, input, button { display: block; margin: 10px 0; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-    th { background-color: #f2f2f2; }
-  </style>
-</head>
-<body>
-  <h1>Simulador de Planos Hapvida</h1><label for="plano">Tipo de Plano:</label> <select id="plano"> <option value="empresarial">Plano Empresarial</option> <option value="individual">Plano Individual</option> </select>
+  <title>Calculadora de Planos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head><body class="bg-white text-black p-4">
+  <div class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4">Calculadora de Planos Hapvida</h1><div class="mb-4">
+  <label class="block font-semibold mb-1">Digite as idades (separadas por vírgula):</label>
+  <input type="text" id="idades" placeholder="Ex: 23, 30, 54" class="w-full p-2 border rounded">
+</div>
 
-<label for="cobertura">Tipo de Cobertura:</label> <select id="cobertura"> <option value="nosso">Nosso plano</option> <option value="ambulatorial">Ambulatorial</option> </select>
+<div class="mb-4 flex flex-wrap gap-2">
+  <button onclick="selecionarTipo('individual')" id="btn-individual" class="border text-black px-4 py-2 rounded">Individual</button>
+  <button onclick="selecionarTipo('empresarial')" id="btn-empresarial" class="border text-black px-4 py-2 rounded">Empresarial</button>
 
-<label for="idade">Idade(s) (separadas por vírgula):</label> <input type="text" id="idade" placeholder="Ex: 20, 35, 58">
+  <button onclick="selecionarCobertura('nosso')" id="btn-nosso" class="border text-black px-4 py-2 rounded">Nosso plano</button>
+  <button onclick="selecionarCobertura('ambulatorial')" id="btn-ambulatorial" class="border text-black px-4 py-2 rounded">Ambulatorial</button>
+</div>
 
-<button onclick="calcularPlano()">Calcular</button>
+<div class="mb-4">
+  <button onclick="calcular()" class="bg-blue-500 text-white px-4 py-2 rounded">Calcular</button>
+</div>
 
-  <div id="result" style="display:none">
-    <h2>Resultado</h2>
-    <table id="resultTable">
-      <thead>
-        <tr>
-          <th>Faixa Etária</th>
-          <th>Coparticipação Total</th>
-          <th>Coparticipação Parcial</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <button onclick="copiarResultado()">Copiar Resultado</button>
-  </div><script>
-  const planos = {
-    empresarial: {
-      nosso: {
-        comCoparticipacao: [
-          { faixa: "00 a 18", valor: 116.52 },
-          { faixa: "19 a 23", valor: 130.50 },
-          { faixa: "24 a 28", valor: 146.16 },
-          { faixa: "29 a 33", valor: 168.08 },
-          { faixa: "34 a 38", valor: 193.29 },
-          { faixa: "39 a 43", valor: 230.02 },
-          { faixa: "44 a 48", valor: 287.52 },
-          { faixa: "49 a 53", valor: 359.41 },
-          { faixa: "54 a 58", valor: 610.99 },
-          { faixa: "59+", valor: 684.31 }
-        ],
-        semCoparticipacao: [
-          { faixa: "00 a 18", valor: 149.08 },
-          { faixa: "19 a 23", valor: 166.97 },
-          { faixa: "24 a 28", valor: 187.01 },
-          { faixa: "29 a 33", valor: 215.06 },
-          { faixa: "34 a 38", valor: 247.32 },
-          { faixa: "39 a 43", valor: 294.30 },
-          { faixa: "44 a 48", valor: 367.88 },
-          { faixa: "49 a 53", valor: 459.85 },
-          { faixa: "54 a 58", valor: 781.75 },
-          { faixa: "59+", valor: 875.55 }
-        ]
-      },
-      ambulatorial: {
-        comCoparticipacao: [
-          { faixa: "00 a 18", valor: 81.63 },
-          { faixa: "19 a 23", valor: 91.42 },
-          { faixa: "24 a 28", valor: 102.39 },
-          { faixa: "29 a 33", valor: 117.75 },
-          { faixa: "34 a 38", valor: 135.41 },
-          { faixa: "39 a 43", valor: 161.14 },
-          { faixa: "44 a 48", valor: 201.43 },
-          { faixa: "49 a 53", valor: 251.80 },
-          { faixa: "54 a 58", valor: 428.05 },
-          { faixa: "59+", valor: 479.42 }
-        ],
-        semCoparticipacao: [
-          { faixa: "00 a 18", valor: 110.53 },
-          { faixa: "19 a 23", valor: 123.79 },
-          { faixa: "24 a 28", valor: 138.64 },
-          { faixa: "29 a 33", valor: 159.44 },
-          { faixa: "34 a 38", valor: 183.36 },
-          { faixa: "39 a 43", valor: 218.20 },
-          { faixa: "44 a 48", valor: 272.76 },
-          { faixa: "49 a 53", valor: 340.94 },
-          { faixa: "54 a 58", valor: 579.61 },
-          { faixa: "59+", valor: 649.16 }
-        ]
-      }
-    },
-    individual: {
-      nosso: {
-        comCoparticipacao: [
-          { faixa: "00 a 18", valor: 152.80 },
-          { faixa: "19 a 23", valor: 195.29 },
-          { faixa: "24 a 28", valor: 221.57 },
-          { faixa: "29 a 33", valor: 245.75 },
-          { faixa: "34 a 38", valor: 257.04 },
-          { faixa: "39 a 43", valor: 287.85 },
-          { faixa: "44 a 48", valor: 346.77 },
-          { faixa: "49 a 53", valor: 470.92 },
-          { faixa: "54 a 58", valor: 628.72 },
-          { faixa: "59+", valor: 811.32 }
-        ],
-        semCoparticipacao: [
-          { faixa: "00 a 18", valor: 186.00 },
-          { faixa: "19 a 23", valor: 239.10 },
-          { faixa: "24 a 28", valor: 271.96 },
-          { faixa: "29 a 33", valor: 302.18 },
-          { faixa: "34 a 38", valor: 316.29 },
-          { faixa: "39 a 43", valor: 354.81 },
-          { faixa: "44 a 48", valor: 428.45 },
-          { faixa: "49 a 53", valor: 583.64 },
-          { faixa: "54 a 58", valor: 780.90 },
-          { faixa: "59+", valor: 1009.16 }
-        ]
-      },
-      ambulatorial: {
-        comCoparticipacao: [
-          { faixa: "00 a 18", valor: 99.71 },
-          { faixa: "19 a 23", valor: 130.90 },
-          { faixa: "24 a 28", valor: 149.04 },
-          { faixa: "29 a 33", valor: 166.11 },
-          { faixa: "34 a 38", valor: 174.74 },
-          { faixa: "39 a 43", valor: 196.02 },
-          { faixa: "44 a 48", valor: 239.41 },
-          { faixa: "49 a 53", valor: 331.55 },
-          { faixa: "54 a 58", valor: 446.49 },
-          { faixa: "59+", valor: 579.49 }
-        ],
-        semCoparticipacao: [
-          { faixa: "00 a 18", valor: 155.18 },
-          { faixa: "19 a 23", valor: 204.28 },
-          { faixa: "24 a 28", valor: 232.84 },
-          { faixa: "29 a 33", valor: 259.72 },
-          { faixa: "34 a 38", valor: 273.32 },
-          { faixa: "39 a 43", valor: 306.82 },
-          { faixa: "44 a 48", valor: 375.14 },
-          { faixa: "49 a 53", valor: 520.22 },
-          { faixa: "54 a 58", valor: 701.19 },
-          { faixa: "59+", valor: 910.61 }
-        ]
-      }
+<div id="resultado" class="whitespace-pre-wrap border p-4 rounded mb-4"></div>
+
+<button onclick="copiarResultado()" class="bg-blue-500 text-white px-4 py-2 rounded">Copiar resultado</button>
+
+  </div>  <script>
+    let tipoPlano = '';
+    let cobertura = '';
+
+    function selecionarTipo(tipo) {
+      tipoPlano = tipo;
+      document.getElementById('btn-individual').classList.remove('bg-blue-500', 'text-white');
+      document.getElementById('btn-empresarial').classList.remove('bg-blue-500', 'text-white');
+      document.getElementById('btn-' + tipo).classList.add('bg-blue-500', 'text-white');
     }
-  };
 
-  function calcularPlano() {
-    const plano = document.getElementById('plano').value;
-    const cobertura = document.getElementById('cobertura').value;
-    const idades = document.getElementById('idade').value.split(',').map(i => parseInt(i.trim()));
+    function selecionarCobertura(tipo) {
+      cobertura = tipo;
+      document.getElementById('btn-nosso').classList.remove('bg-blue-500', 'text-white');
+      document.getElementById('btn-ambulatorial').classList.remove('bg-blue-500', 'text-white');
+      document.getElementById('btn-' + tipo).classList.add('bg-blue-500', 'text-white');
+    }
 
-    const tabela = document.querySelector('#resultTable tbody');
-    tabela.innerHTML = '';
+    function faixaValor(idade, tabela) {
+      for (const faixa of tabela) {
+        if (idade >= faixa.min && idade <= faixa.max) return faixa.valor;
+      }
+      return 0;
+    }
 
-    idades.forEach(idade => {
-      const faixa = getFaixaEtaria(idade);
-      if (!faixa) return;
+    function calcular() {
+      const input = document.getElementById('idades').value;
+      const idades = input.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
 
-      const linha = tabela.insertRow();
-      linha.insertCell().innerText = faixa;
-      linha.insertCell().innerText = formatarValor(getValor(planos[plano][cobertura].comCoparticipacao, faixa));
-      linha.insertCell().innerText = formatarValor(getValor(planos[plano][cobertura].semCoparticipacao, faixa));
-    });
+      if (!tipoPlano || !cobertura || idades.length === 0) {
+        alert('Preencha todas as opções e insira pelo menos uma idade.');
+        return;
+      }
 
-    document.getElementById('result').style.display = 'block';
-  }
+      const tabelas = valores[tipoPlano][cobertura];
 
-  function getFaixaEtaria(idade) {
-    if (idade <= 18) return '00 a 18';
-    if (idade <= 23) return '19 a 23';
-    if (idade <= 28) return '24 a 28';
-    if (idade <= 33) return '29 a 33';
-    if (idade <= 38) return '34 a 38';
-    if (idade <= 43) return '39 a 43';
-    if (idade <= 48) return '44 a 48';
-    if (idade <= 53) return '49 a 53';
-    if (idade <= 58) return '54 a 58';
-    return '59+';
-  }
+      let resultado = '';
 
-  function getValor(lista, faixa) {
-    const item = lista.find(l => l.faixa === faixa);
-    return item ? item.valor : 0;
-  }
+      if (tipoPlano === 'individual') {
+        resultado += `Plano Individual – ${cobertura === 'nosso' ? 'Nosso plano' : 'Ambulatorial'}\n`;
+        resultado += '*Promoção 15% nas 03 primeiras mensalidades*\n';
+        resultado += cobertura === 'nosso'
+          ? '*Nosso plano (completo):* Ele dá direito a urgência e emergência, consultas, exames, internações e cirurgias em toda rede hapvida (Hapclínicas, laboratórios e Hospitais do Hapvida)\n\n'
+          : '*Ambulatorial:* Dá direito a urgência e emergência, consultas, exames e odontologia de emergência.\n\n';
+      } else {
+        resultado += `Plano Empresarial – ${cobertura === 'nosso' ? 'Nosso plano' : 'Ambulatorial'}\n`;
+        resultado += '*Promoção 15% nas 03 primeiras mensalidades*\n';
+        resultado += cobertura === 'nosso'
+          ? '*Nosso plano (completo):* Ele dá direito a urgência e emergência, consultas, exames, internações e cirurgias em toda rede Hapvida (Hapclínicas, laboratórios e Hospitais do Hapvida)\n\n'
+          : '*Ambulatorial:* Dá direito a urgência e emergência, consultas, exames.\n\n';
+      }
 
-  function formatarValor(valor) {
-    return `R$ ${valor.toFixed(2).replace('.', ',')}`;
-  }
+      ['com', 'sem'].forEach(tipo => {
+        resultado += tipo === 'com' ? '**Coparticipação total**\n' : '**Coparticipação parcial**\n';
+        let total = 0;
+        for (const idade of idades) {
+          const valor = faixaValor(idade, tabelas[tipo]);
+          resultado += `${idade} anos / R$ ${valor.toFixed(2).replace('.', ',')}\n`;
+          total += valor;
+        }
+        resultado += `Total R$ ${total.toFixed(2).replace('.', ',')}\n\n`;
+      });
 
-  function copiarResultado() {
-    const tabela = document.getElementById('resultTable').outerHTML;
-    const area = document.createElement('textarea');
-    area.value = tabela;
-    document.body.appendChild(area);
-    area.select();
-    document.execCommand('copy');
-    document.body.removeChild(area);
-    alert('Resultado copiado com sucesso!');
-  }
-</script></body>
-</html>
+      document.getElementById('resultado').innerText = resultado;
+    }
+
+    function copiarResultado() {
+      const texto = document.getElementById('resultado').innerText;
+      navigator.clipboard.writeText(texto).then(() => alert('Resultado copiado!'));
+    }
+
+    const valores = {
+      individual: {
+        nosso: {
+          com: [
+            { min: 0, max: 18, valor: 152.80 },
+            { min: 19, max: 23, valor: 195.29 },
+            { min: 24, max: 28, valor: 221.57 },
+            { min: 29, max: 33, valor: 245.75 },
+            { min: 34, max: 38, valor: 257.04 },
+            { min: 39, max: 43, valor: 287.85 },
+            { min: 44, max: 48, valor: 346.77 },
+            { min: 49, max: 53, valor: 470.92 },
+            { min: 54, max: 58, valor: 628.72 },
+            { min: 59, max: 120, valor: 811.32 }
+          ],
+          sem: [
+            { min: 0, max: 18, valor: 186.00 },
+            { min: 19, max: 23, valor: 239.10 },
+            { min: 24, max: 28, valor: 271.96 },
+            { min: 29, max: 33, valor: 302.18 },
+            { min: 34, max: 38, valor: 316.29 },
+            { min: 39, max: 43, valor: 354.81 },
+            { min: 44, max: 48, valor: 428.45 },
+            { min: 49, max: 53, valor: 583.64 },
+            { min: 54, max: 58, valor: 780.90 },
+            { min: 59, max: 120, valor: 1009.16 }
+          ]
+        },
+        ambulatorial: {
+          com: [
+            { min: 0, max: 18, valor: 99.71 },
+            { min: 19, max: 23, valor: 130.90 },
+            { min: 24, max: 28, valor: 149.04 },
+            { min: 29, max: 33, valor: 166.11 },
+            { min: 34, max: 38, valor: 174.74 },
+            { min: 39, max: 43, valor: 196.02 },
+            { min: 44, max: 48, valor: 239.41 },
+            { min: 49, max: 53, valor: 331.55 },
+            { min: 54, max: 58, valor: 446.49 },
+            { min: 59, max: 120, valor: 579.49 }
+          ],
+          sem: [
+            { min: 0, max: 18, valor: 155.18 },
+            { min: 19, max: 23, valor: 204.28 },
+            { min: 24, max: 28, valor: 232.84 },
+            { min: 29, max: 33, valor: 259.72 },
+            { min: 34, max: 38, valor: 273.32 },
+            { min: 39, max: 43, valor: 306.82 },
+            { min: 44, max: 48, valor: 375.14 },
+            { min: 49, max: 53, valor: 520.22 },
+            { min: 54, max: 58, valor: 701.19 },
+            { min: 59, max: 120, valor: 910.61 }
+          ]
+        }
+      },
+      empresarial: {
+        nosso: {
+          com: [
+            { min: 0, max: 18, valor: 116.52 },
+            { min: 19, max: 23, valor: 130.50 },
+            { min: 24, max: 28, valor: 146.16 },
+            { min: 29, max: 33, valor: 168.08 },
+            { min: 34, max: 38, valor: 193.29 },
+            { min: 39, max: 43, valor: 230.02 },
+            { min: 44, max: 48, valor: 287.52 },
+            { min: 49, max: 53, valor: 359.41 },
+            { min: 54, max: 58, valor: 610.99 },
+            { min: 59, max: 120, valor: 684.31 }
+          ],
+          sem: [
+            { min: 0, max: 18, valor: 149.08 },
+            { min: 19, max: 23, valor: 166.97 },
+            { min: 24, max: 28, valor: 187.01 },
+            { min: 29, max: 33, valor: 215.06 },
+            { min: 34, max: 38, valor: 247.32 },
+            { min: 39, max: 43, valor: 294.30 },
+            { min: 44, max: 48, valor: 367.88 },
+            { min: 49, max: 53, valor: 459.85 },
+            { min: 54, max: 58, valor: 781.75 },
+            { min: 59, max: 120, valor: 875.55 }
+          ]
+        },
+        ambulatorial: {
+          com: [
+            { min: 0, max: 18, valor: 81.63 },
+            { min: 19, max: 23, valor: 91.42 },
+            { min: 24, max: 28, valor: 102.39 },
+            { min: 29, max: 33, valor: 117.75 },
+            { min: 34, max: 38, valor: 135.41 },
+            { min: 39, max: 43, valor: 161.14 },
+            { min: 44, max: 48, valor: 201.43 },
+            { min: 49, max: 53, valor: 251.80 },
+            { min: 54, max: 58, valor: 428.05 },
+            { min: 59, max: 120, valor: 479.42 }
+          ],
+          sem: [
+            { min: 0, max: 18, valor: 110.53 },
+            { min: 19, max: 23, valor: 123.79 },
+            { min: 24, max: 28, valor: 138.64 },
+            { min: 29, max: 33, valor: 159.44 },
+            { min: 34, max: 38, valor: 183.36 },
+            { min: 39, max: 43, valor: 218.20 },
+            { min: 44, max: 48, valor: 272.76 },
+            { min: 49, max: 53, valor: 340.94 },
+            { min: 54, max: 58, valor: 579.61 },
+            { min: 59, max: 120, valor: 649.16 }
+          ]
+        }
+      }
+    };
+  </script></body></html>
