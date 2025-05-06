@@ -135,19 +135,38 @@
             const tipoPlano = document.getElementById("tipo-plano").value;
             const tipoCobertura = document.getElementById("tipo-cobertura").value;
 
-            let resultado = `Plano: ${tipoPlano === "individual" ? "Individual" : "Empresarial"}\nCobertura: ${tipoCobertura === "ambulatorial" ? "Ambulatorial" : "Nosso Plano"}\n\n`;
+            let resultado = `*Promoção 15% nas 03 primeiras mensalidades*\n\n`;
 
-            for (const [tipo, valores] of Object.entries(planos[tipoPlano][tipoCobertura])) {
-                let total = 0;
-                resultado += `Tipo de Coparticipação: ${tipo}\n`;
-                idades.forEach(idade => {
-                    const faixa = faixaEtaria(idade);
-                    const valor = valores[faixa];
-                    total += valor;
-                    resultado += `Idade ${idade}: R$ ${valor.toFixed(2)}\n`;
-                });
-                resultado += `Total: R$ ${total.toFixed(2)}\n`;
+            if (tipoPlano === "individual") {
+                resultado += `Plano Individual – `;
+            } else {
+                resultado += `Plano Empresarial – `;
             }
+
+            if (tipoCobertura === "ambulatorial") {
+                resultado += `Ambulatorial\n\n`;
+            } else {
+                resultado += `Nosso plano (completo)\n\n`;
+            }
+
+            resultado += `Plano com coparticipação: \n\n`;
+
+            let totalCoparticipacaoTotal = 0;
+            let totalCoparticipacaoParcial = 0;
+            idades.forEach(idade => {
+                const faixa = faixaEtaria(idade);
+                const valorCoparticipacaoTotal = planos[tipoPlano][tipoCobertura]["coparticipação total"][faixa];
+                const valorCoparticipacaoParcial = planos[tipoPlano][tipoCobertura]["coparticipação parcial"][faixa];
+                totalCoparticipacaoTotal += valorCoparticipacaoTotal;
+                totalCoparticipacaoParcial += valorCoparticipacaoParcial;
+
+                resultado += `Idade ${idade}: R$ ${valorCoparticipacaoTotal.toFixed(2)} (Coparticipação Total)\n`;
+                resultado += `Idade ${idade}: R$ ${valorCoparticipacaoParcial.toFixed(2)} (Coparticipação Parcial)\n`;
+            });
+
+            resultado += `\nTotal Coparticipação Total: R$ ${totalCoparticipacaoTotal.toFixed(2)}\n`;
+            resultado += `Total Coparticipação Parcial: R$ ${totalCoparticipacaoParcial.toFixed(2)}\n`;
+
             document.getElementById("resultado").innerText = resultado;
         }
 
