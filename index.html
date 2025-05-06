@@ -48,14 +48,39 @@
             border-left: 5px solid #004080;
             white-space: pre-wrap;
         }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+        }
     </style>
 </head>
 <body>
     <h1>Simulador de Planos de Saúde</h1>
+    
     <div class="section">
         <label for="idades">Digite as idades separadas por vírgula:</label>
         <input type="text" id="idades" placeholder="Ex: 22, 35, 58">
+        
+        <div class="btn-container">
+            <div>
+                <label for="tipo-plano">Selecione o tipo de plano:</label>
+                <select id="tipo-plano">
+                    <option value="individual">Plano Individual</option>
+                    <option value="empresarial">Plano Empresarial</option>
+                </select>
+            </div>
+            <div>
+                <label for="tipo-cobertura">Selecione o tipo de cobertura:</label>
+                <select id="tipo-cobertura">
+                    <option value="ambulatorial">Plano Ambulatorial</option>
+                    <option value="completo">Plano Nosso Plano</option>
+                </select>
+            </div>
+        </div>
+        
         <button onclick="calcular()">Calcular</button>
+        <button onclick="copiarResultado()">Copiar Resultado</button>
+
         <div id="resultado" class="result"></div>
     </div>
 
@@ -63,21 +88,25 @@
         const faixas = [18, 23, 28, 33, 38, 43, 48, 53, 58, 150];
 
         const planos = {
-            "Plano Empresarial – Nosso plano (COMPLETO)": {
-                "coparticipação total": [116.52, 130.50, 146.16, 168.08, 193.29, 230.02, 287.52, 359.41, 610.99, 684.31],
-                "coparticipação parcial": [149.08, 166.97, 187.01, 215.06, 247.32, 294.30, 367.88, 459.85, 781.75, 875.55]
+            "empresarial": {
+                "completo": {
+                    "coparticipação total": [116.52, 130.50, 146.16, 168.08, 193.29, 230.02, 287.52, 359.41, 610.99, 684.31],
+                    "coparticipação parcial": [149.08, 166.97, 187.01, 215.06, 247.32, 294.30, 367.88, 459.85, 781.75, 875.55]
+                },
+                "ambulatorial": {
+                    "coparticipação total": [81.63, 91.42, 102.39, 117.75, 135.41, 161.14, 201.43, 251.80, 428.05, 479.42],
+                    "coparticipação parcial": [110.53, 123.79, 138.64, 159.44, 183.36, 218.20, 272.76, 340.94, 579.61, 649.16]
+                }
             },
-            "Plano Empresarial – Ambulatorial": {
-                "coparticipação total": [81.63, 91.42, 102.39, 117.75, 135.41, 161.14, 201.43, 251.80, 428.05, 479.42],
-                "coparticipação parcial": [110.53, 123.79, 138.64, 159.44, 183.36, 218.20, 272.76, 340.94, 579.61, 649.16]
-            },
-            "Plano Individual – Nosso plano (COMPLETO)": {
-                "coparticipação total": [152.80, 195.29, 221.57, 245.75, 257.04, 287.85, 346.77, 470.92, 628.72, 811.32],
-                "coparticipação parcial": [186.00, 239.10, 271.96, 302.18, 316.29, 354.81, 428.45, 583.64, 780.90, 1009.16]
-            },
-            "Plano Individual – Ambulatorial": {
-                "coparticipação total": [99.71, 130.90, 149.04, 166.11, 174.74, 196.02, 239.41, 331.55, 446.49, 579.49],
-                "coparticipação parcial": [155.18, 204.28, 232.84, 259.72, 273.32, 306.82, 375.14, 520.22, 701.19, 910.61]
+            "individual": {
+                "completo": {
+                    "coparticipação total": [152.80, 195.29, 221.57, 245.75, 257.04, 287.85, 346.77, 470.92, 628.72, 811.32],
+                    "coparticipação parcial": [186.00, 239.10, 271.96, 302.18, 316.29, 354.81, 428.45, 583.64, 780.90, 1009.16]
+                },
+                "ambulatorial": {
+                    "coparticipação total": [99.71, 130.90, 149.04, 166.11, 174.74, 196.02, 239.41, 331.55, 446.49, 579.49],
+                    "coparticipação parcial": [155.18, 204.28, 232.84, 259.72, 273.32, 306.82, 375.14, 520.22, 701.19, 910.61]
+                }
             }
         };
 
@@ -90,26 +119,32 @@
 
         function calcular() {
             const idades = document.getElementById("idades").value.split(",").map(x => parseInt(x.trim())).filter(x => !isNaN(x));
-            let resultado = "";
+            const tipoPlano = document.getElementById("tipo-plano").value;
+            const tipoCobertura = document.getElementById("tipo-cobertura").value;
 
-            for (const [plano, tipos] of Object.entries(planos)) {
-                resultado += `\n${plano}\n`;
+            let resultado = `Plano: ${tipoPlano === "individual" ? "Individual" : "Empresarial"}\nCobertura: ${tipoCobertura === "ambulatorial" ? "Ambulatorial" : "Nosso Plano"}\n\n`;
 
-                for (const [tipo, valores] of Object.entries(tipos)) {
-                    let total = 0;
-                    resultado += `\n${tipo}\n`;
-                    idades.forEach(idade => {
-                        const faixa = faixaEtaria(idade);
-                        const valor = valores[faixa];
-                        total += valor;
-                        resultado += `Idade ${idade}: R$ ${valor.toFixed(2)}\n`;
-                    });
-                    resultado += `Total: R$ ${total.toFixed(2)}\n`;
-                }
-                resultado += "\n----------------------------------------\n";
+            for (const [tipo, valores] of Object.entries(planos[tipoPlano][tipoCobertura])) {
+                let total = 0;
+                resultado += `Tipo de Coparticipação: ${tipo}\n`;
+                idades.forEach(idade => {
+                    const faixa = faixaEtaria(idade);
+                    const valor = valores[faixa];
+                    total += valor;
+                    resultado += `Idade ${idade}: R$ ${valor.toFixed(2)}\n`;
+                });
+                resultado += `Total: R$ ${total.toFixed(2)}\n`;
             }
-
             document.getElementById("resultado").innerText = resultado;
+        }
+
+        function copiarResultado() {
+            const resultado = document.getElementById("resultado").innerText;
+            navigator.clipboard.writeText(resultado).then(() => {
+                alert("Resultado copiado para a área de transferência!");
+            }).catch(err => {
+                alert("Erro ao copiar o resultado: " + err);
+            });
         }
     </script>
 </body>
