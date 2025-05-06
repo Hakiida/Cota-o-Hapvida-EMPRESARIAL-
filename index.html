@@ -1,314 +1,203 @@
 
-<!DOCTYPE html>
-<html lang="pt-br">
+<!DOCTYPE html><html lang="pt-Bt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Plano de Saúde</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f7f7f7;
-        }
-
-        .container {
-            width: 80%;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-top: 50px;
-            border-radius: 8px;
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-
-        .form-group {
-            margin: 20px 0;
-        }
-
-        label {
-            font-size: 16px;
-            color: #333;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        select, input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-right: 10px;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        button:active {
-            background-color: #004085;
-        }
-
-        .result {
-            margin-top: 20px;
-            display: none;
-            padding: 15px;
-            background-color: #e9ecef;
-            border-radius: 8px;
-        }
-
-        .result table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        .result th, .result td {
-            padding: 10px;
-            text-align: center;
-            border: 1px solid #ddd;
-        }
-
-        .result th {
-            background-color: #f1f1f1;
-        }
-
-        .result td {
-            background-color: #ffffff;
-        }
-
-        .btn-copy {
-            margin-top: 20px;
-            background-color: #28a745;
-        }
-
-        .btn-copy:hover {
-            background-color: #218838;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador Hapvida</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    label, select, input, button { display: block; margin: 10px 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background-color: #f2f2f2; }
+  </style>
 </head>
 <body>
+  <h1>Simulador de Planos Hapvida</h1><label for="plano">Tipo de Plano:</label> <select id="plano"> <option value="empresarial">Plano Empresarial</option> <option value="individual">Plano Individual</option> </select>
 
-<div class="container">
-    <h1>Simulador de Plano de Saúde</h1>
+<label for="cobertura">Tipo de Cobertura:</label> <select id="cobertura"> <option value="nosso">Nosso plano</option> <option value="ambulatorial">Ambulatorial</option> </select>
 
-    <div class="form-group">
-        <label for="plano">Selecione o Plano:</label>
-        <select id="plano">
-            <option value="individual">Plano Individual</option>
-            <option value="empresarial">Plano Empresarial</option>
-        </select>
-    </div>
+<label for="idade">Idade(s) (separadas por vírgula):</label> <input type="text" id="idade" placeholder="Ex: 20, 35, 58">
 
-    <div class="form-group">
-        <label for="cobertura">Selecione a Cobertura:</label>
-        <select id="cobertura">
-            <option value="nossoPlano">Nosso plano</option>
-            <option value="ambulatorial">Ambulatorial</option>
-        </select>
-    </div>
+<button onclick="calcularPlano()">Calcular</button>
 
-    <div class="form-group">
-        <label for="idade">Informe a(s) Idade(s) (separadas por vírgula):</label>
-        <input type="text" id="idade" placeholder="Idade(s)">
-    </div>
-
-    <div class="form-group">
-        <button onclick="calcularPlano()">Calcular</button>
-    </div>
-
-    <div class="result" id="result">
-        <h3>Resultado:</h3>
-        <table id="resultTable">
-            <thead>
-                <tr>
-                    <th>Faixa Etária</th>
-                    <th>Com Coparticipação</th>
-                    <th>Sem Coparticipação</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Tabela de Resultados -->
-            </tbody>
-        </table>
-        <button class="btn-copy" onclick="copiarResultado()">Copiar Resultado</button>
-    </div>
-</div>
-
-<script>
-    const planos = {
-        "individual": {
-            "nossoPlano": {
-                comCoparticipacao: [
-                    { faixa: "00 a 18", valor: 152.80 },
-                    { faixa: "19 a 23", valor: 195.29 },
-                    { faixa: "24 a 28", valor: 221.57 },
-                    { faixa: "29 a 33", valor: 245.75 },
-                    { faixa: "34 a 38", valor: 257.04 },
-                    { faixa: "39 a 43", valor: 287.85 },
-                    { faixa: "44 a 48", valor: 346.77 },
-                    { faixa: "49 a 53", valor: 470.92 },
-                    { faixa: "54 a 58", valor: 628.72 },
-                    { faixa: "59+", valor: 811.32 }
-                ],
-                semCoparticipacao: [
-                    { faixa: "00 a 18", valor: 186.00 },
-                    { faixa: "19 a 23", valor: 239.10 },
-                    { faixa: "24 a 28", valor: 271.96 },
-                    { faixa: "29 a 33", valor: 302.18 },
-                    { faixa: "34 a 38", valor: 316.29 },
-                    { faixa: "39 a 43", valor: 354.81 },
-                    { faixa: "44 a 48", valor: 428.45 },
-                    { faixa: "49 a 53", valor: 583.64 },
-                    { faixa: "54 a 58", valor: 780.90 },
-                    { faixa: "59+", valor: 1.009,16 }
-                ]
-            },
-            "ambulatorial": {
-                comCoparticipacao: [
-                    { faixa: "00 a 18", valor: 99.71 },
-                    { faixa: "19 a 23", valor: 130.90 },
-                    { faixa: "24 a 28", valor: 149.04 },
-                    { faixa: "29 a 33", valor: 166.11 },
-                    { faixa: "34 a 38", valor: 174.74 },
-                    { faixa: "39 a 43", valor: 196.02 },
-                    { faixa: "44 a 48", valor: 239.41 },
-                    { faixa: "49 a 53", valor: 331.55 },
-                    { faixa: "54 a 58", valor: 446.49 },
-                    { faixa: "59+", valor: 579.49 }
-                ],
-                semCoparticipacao: [
-                    { faixa: "00 a 18", valor: 155.18 },
-                    { faixa: "19 a 23", valor: 204.28 },
-                    { faixa: "24 a 28", valor: 232.84 },
-                    { faixa: "29 a 33", valor: 259.72 },
-                    { faixa: "34 a 38", valor: 273.32 },
-                    { faixa: "39 a 43", valor: 306.82 },
-                    { faixa: "44 a 48", valor: 375.14 },
-                    { faixa: "49 a 53", valor: 520.22 },
-                    { faixa: "54 a 58", valor: 701.19 },
-                    { faixa: "59+", valor: 910.61 }
-                ]
-            }
-        },
-        "empresarial": {
-            "nossoPlano": {
-                comCoparticipacao: [
-                    { faixa: "00 a 18", valor: 116.52 },
-                    { faixa: "19 a 23", valor: 130.50 },
-                    { faixa: "24 a 28", valor: 146.16 },
-                    { faixa: "29 a 33", valor: 168.08 },
-                    { faixa: "34 a 38", valor: 193.29 },
-                    { faixa: "39 a 43", valor: 230.02 },
-                    { faixa: "44 a 48", valor: 287.52 },
-                    { faixa: "49 a 53", valor: 359.41 },
-                    { faixa: "54 a 58", valor: 610.99 },
-                    { faixa: "59+", valor: 684.31 }
-                ],
-                semCoparticipacao: [
-                    { faixa: "00 a 18", valor: 149.08 },
-                    { faixa: "19 a 23", valor: 166.97 },
-                    { faixa: "24 a 28", valor: 187.01 },
-                    { faixa: "29 a 33", valor: 215.06 },
-                    { faixa: "34 a 38", valor: 247.32 },
-                    { faixa: "39 a 43", valor: 294.30 },
-                    { faixa: "44 a 48", valor: 367.88 },
-                    { faixa: "49 a 53", valor: 459.85 },
-                    { faixa: "54 a 58", valor: 781.75 },
-                    { faixa: "59+", valor: 875.55 }
-                ]
-            },
-            "ambulatorial": {
-                comCoparticipacao: [
-                    { faixa: "00 a 18", valor: 81.63 },
-                    { faixa: "19 a 23", valor: 91.42 },
-                    { faixa: "24 a 28", valor: 102.39 },
-                    { faixa: "29 a 33", valor: 117.75 },
-                    { faixa: "34 a 38", valor: 135.41 },
-                    { faixa: "39 a 43", valor: 161.14 },
-                    { faixa: "44 a 48", valor: 201.43 },
-                    { faixa: "49 a 53", valor: 251.66 },
-                    { faixa: "54 a 58", valor: 332.27 },
-                    { faixa: "59+", valor: 426.34 }
-                ],
-                semCoparticipacao: [
-                    { faixa: "00 a 18", valor: 109.30 },
-                    { faixa: "19 a 23", valor: 127.15 },
-                    { faixa: "24 a 28", valor: 147.53 },
-                    { faixa: "29 a 33", valor: 167.58 },
-                    { faixa: "34 a 38", valor: 191.05 },
-                    { faixa: "39 a 43", valor: 224.90 },
-                    { faixa: "44 a 48", valor: 273.66 },
-                    { faixa: "49 a 53", valor: 348.51 },
-                    { faixa: "54 a 58", valor: 464.31 },
-                    { faixa: "59+", valor: 599.57 }
-                ]
-            }
-        }
-    };
-
-    function calcularPlano() {
-        const planoSelecionado = document.getElementById("plano").value;
-        const coberturaSelecionada = document.getElementById("cobertura").value;
-        const idades = document.getElementById("idade").value.split(',').map(age => parseInt(age.trim())).filter(age => !isNaN(age));
-
-        let tabelaCom = planos[planoSelecionado][coberturaSelecionada].comCoparticipacao;
-        let tabelaSem = planos[planoSelecionado][coberturaSelecionada].semCoparticipacao;
-
-        let resultTable = document.getElementById("resultTable").getElementsByTagName('tbody')[0];
-        resultTable.innerHTML = "";  // Limpa resultados anteriores
-
-        let totalCom = 0;
-        let totalSem = 0;
-
-        idades.forEach(idade => {
-            let faixa = tabelaCom.find(f => {
-                const faixaEtaria = f.faixa.split(' a ');
-                return idade >= parseInt(faixaEtaria[0]) && idade <= parseInt(faixaEtaria[1]);
-            });
-
-            if (faixa) {
-                totalCom += faixa.valor;
-                const linha = resultTable.insertRow();
-                linha.insertCell(0).innerText = faixa.faixa;
-                linha.insertCell(1).innerText = `R$ ${faixa.valor.toFixed(2)}`;
-                linha.insertCell(2).innerText = `R$ ${faixa.valor.toFixed(2)}`;
-            }
-        });
-
-        let total = resultTable.rows.length;
-        let resultDiv = document.getElementById("result");
-        resultDiv.style.display = "block";
+  <div id="result" style="display:none">
+    <h2>Resultado</h2>
+    <table id="resultTable">
+      <thead>
+        <tr>
+          <th>Faixa Etária</th>
+          <th>Coparticipação Total</th>
+          <th>Coparticipação Parcial</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button onclick="copiarResultado()">Copiar Resultado</button>
+  </div><script>
+  const planos = {
+    empresarial: {
+      nosso: {
+        comCoparticipacao: [
+          { faixa: "00 a 18", valor: 116.52 },
+          { faixa: "19 a 23", valor: 130.50 },
+          { faixa: "24 a 28", valor: 146.16 },
+          { faixa: "29 a 33", valor: 168.08 },
+          { faixa: "34 a 38", valor: 193.29 },
+          { faixa: "39 a 43", valor: 230.02 },
+          { faixa: "44 a 48", valor: 287.52 },
+          { faixa: "49 a 53", valor: 359.41 },
+          { faixa: "54 a 58", valor: 610.99 },
+          { faixa: "59+", valor: 684.31 }
+        ],
+        semCoparticipacao: [
+          { faixa: "00 a 18", valor: 149.08 },
+          { faixa: "19 a 23", valor: 166.97 },
+          { faixa: "24 a 28", valor: 187.01 },
+          { faixa: "29 a 33", valor: 215.06 },
+          { faixa: "34 a 38", valor: 247.32 },
+          { faixa: "39 a 43", valor: 294.30 },
+          { faixa: "44 a 48", valor: 367.88 },
+          { faixa: "49 a 53", valor: 459.85 },
+          { faixa: "54 a 58", valor: 781.75 },
+          { faixa: "59+", valor: 875.55 }
+        ]
+      },
+      ambulatorial: {
+        comCoparticipacao: [
+          { faixa: "00 a 18", valor: 81.63 },
+          { faixa: "19 a 23", valor: 91.42 },
+          { faixa: "24 a 28", valor: 102.39 },
+          { faixa: "29 a 33", valor: 117.75 },
+          { faixa: "34 a 38", valor: 135.41 },
+          { faixa: "39 a 43", valor: 161.14 },
+          { faixa: "44 a 48", valor: 201.43 },
+          { faixa: "49 a 53", valor: 251.80 },
+          { faixa: "54 a 58", valor: 428.05 },
+          { faixa: "59+", valor: 479.42 }
+        ],
+        semCoparticipacao: [
+          { faixa: "00 a 18", valor: 110.53 },
+          { faixa: "19 a 23", valor: 123.79 },
+          { faixa: "24 a 28", valor: 138.64 },
+          { faixa: "29 a 33", valor: 159.44 },
+          { faixa: "34 a 38", valor: 183.36 },
+          { faixa: "39 a 43", valor: 218.20 },
+          { faixa: "44 a 48", valor: 272.76 },
+          { faixa: "49 a 53", valor: 340.94 },
+          { faixa: "54 a 58", valor: 579.61 },
+          { faixa: "59+", valor: 649.16 }
+        ]
+      }
+    },
+    individual: {
+      nosso: {
+        comCoparticipacao: [
+          { faixa: "00 a 18", valor: 152.80 },
+          { faixa: "19 a 23", valor: 195.29 },
+          { faixa: "24 a 28", valor: 221.57 },
+          { faixa: "29 a 33", valor: 245.75 },
+          { faixa: "34 a 38", valor: 257.04 },
+          { faixa: "39 a 43", valor: 287.85 },
+          { faixa: "44 a 48", valor: 346.77 },
+          { faixa: "49 a 53", valor: 470.92 },
+          { faixa: "54 a 58", valor: 628.72 },
+          { faixa: "59+", valor: 811.32 }
+        ],
+        semCoparticipacao: [
+          { faixa: "00 a 18", valor: 186.00 },
+          { faixa: "19 a 23", valor: 239.10 },
+          { faixa: "24 a 28", valor: 271.96 },
+          { faixa: "29 a 33", valor: 302.18 },
+          { faixa: "34 a 38", valor: 316.29 },
+          { faixa: "39 a 43", valor: 354.81 },
+          { faixa: "44 a 48", valor: 428.45 },
+          { faixa: "49 a 53", valor: 583.64 },
+          { faixa: "54 a 58", valor: 780.90 },
+          { faixa: "59+", valor: 1009.16 }
+        ]
+      },
+      ambulatorial: {
+        comCoparticipacao: [
+          { faixa: "00 a 18", valor: 99.71 },
+          { faixa: "19 a 23", valor: 130.90 },
+          { faixa: "24 a 28", valor: 149.04 },
+          { faixa: "29 a 33", valor: 166.11 },
+          { faixa: "34 a 38", valor: 174.74 },
+          { faixa: "39 a 43", valor: 196.02 },
+          { faixa: "44 a 48", valor: 239.41 },
+          { faixa: "49 a 53", valor: 331.55 },
+          { faixa: "54 a 58", valor: 446.49 },
+          { faixa: "59+", valor: 579.49 }
+        ],
+        semCoparticipacao: [
+          { faixa: "00 a 18", valor: 155.18 },
+          { faixa: "19 a 23", valor: 204.28 },
+          { faixa: "24 a 28", valor: 232.84 },
+          { faixa: "29 a 33", valor: 259.72 },
+          { faixa: "34 a 38", valor: 273.32 },
+          { faixa: "39 a 43", valor: 306.82 },
+          { faixa: "44 a 48", valor: 375.14 },
+          { faixa: "49 a 53", valor: 520.22 },
+          { faixa: "54 a 58", valor: 701.19 },
+          { faixa: "59+", valor: 910.61 }
+        ]
+      }
     }
+  };
 
-    function copiarResultado() {
-        const resultText = document.getElementById("resultTable").outerHTML;
-        const textarea = document.createElement('textarea');
-        document.body.appendChild(textarea);
-        textarea.value = resultText;
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        alert("Resultado copiado para a área de transferência!");
-    }
-</script>
+  function calcularPlano() {
+    const plano = document.getElementById('plano').value;
+    const cobertura = document.getElementById('cobertura').value;
+    const idades = document.getElementById('idade').value.split(',').map(i => parseInt(i.trim()));
 
-</body>
+    const tabela = document.querySelector('#resultTable tbody');
+    tabela.innerHTML = '';
+
+    idades.forEach(idade => {
+      const faixa = getFaixaEtaria(idade);
+      if (!faixa) return;
+
+      const linha = tabela.insertRow();
+      linha.insertCell().innerText = faixa;
+      linha.insertCell().innerText = formatarValor(getValor(planos[plano][cobertura].comCoparticipacao, faixa));
+      linha.insertCell().innerText = formatarValor(getValor(planos[plano][cobertura].semCoparticipacao, faixa));
+    });
+
+    document.getElementById('result').style.display = 'block';
+  }
+
+  function getFaixaEtaria(idade) {
+    if (idade <= 18) return '00 a 18';
+    if (idade <= 23) return '19 a 23';
+    if (idade <= 28) return '24 a 28';
+    if (idade <= 33) return '29 a 33';
+    if (idade <= 38) return '34 a 38';
+    if (idade <= 43) return '39 a 43';
+    if (idade <= 48) return '44 a 48';
+    if (idade <= 53) return '49 a 53';
+    if (idade <= 58) return '54 a 58';
+    return '59+';
+  }
+
+  function getValor(lista, faixa) {
+    const item = lista.find(l => l.faixa === faixa);
+    return item ? item.valor : 0;
+  }
+
+  function formatarValor(valor) {
+    return `R$ ${valor.toFixed(2).replace('.', ',')}`;
+  }
+
+  function copiarResultado() {
+    const tabela = document.getElementById('resultTable').outerHTML;
+    const area = document.createElement('textarea');
+    area.value = tabela;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    document.body.removeChild(area);
+    alert('Resultado copiado com sucesso!');
+  }
+</script></body>
 </html>
