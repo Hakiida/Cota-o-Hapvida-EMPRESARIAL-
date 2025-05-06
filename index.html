@@ -1,75 +1,181 @@
-import React, { useState } from "react"; import { Input } from "@/components/ui/input"; import { Button } from "@/components/ui/button"; import { Card, CardContent } from "@/components/ui/card";
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contador de Planos Hapvida</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
 
-const PLANS = { individual: { "nosso plano": { descricao: "Nosso plano (completo): Ele dá direito a urgência e emergência, consultas, exames, internações e cirurgias em toda rede Hapvida (Hapclínicas, laboratórios e Hospitais do Hapvida). Inclui odonto completo.", com: [ 152.8, 195.29, 221.57, 245.75, 257.04, 287.85, 346.77, 470.92, 628.72, 811.32, ], sem: [ 186.0, 239.1, 271.96, 302.18, 316.29, 354.81, 428.45, 583.64, 780.9, 1009.16, ], }, ambulatorial: { descricao: "Plano Ambulatorial: Ele dá direito a urgência e emergência, consultas, exames e odonto de emergência", com: [ 99.71, 130.9, 149.04, 166.11, 174.74, 196.02, 239.41, 331.55, 446.49, 579.49, ], sem: [ 155.18, 204.28, 232.84, 259.72, 273.32, 306.82, 375.14, 520.22, 701.19, 910.61, ], }, }, empresarial: { "nosso plano": { descricao: "Nosso plano (completo): Dá direito a urgência e emergência, consultas, exames, internações e cirurgias em toda rede Hapvida (Hapclínicas, laboratórios e Hospitais do Hapvida)", com: [ 116.52, 130.9, 146.16, 168.08, 193.29, 230.02, 287.52, 359.41, 610.99, 684.31, ], sem: [ 149.08, 166.97, 187.01, 215.06, 247.32, 294.3, 367.88, 459.85, 781.75, 875.55, ], }, ambulatorial: { descricao: "Ambulatorial: Dá direito a urgência e emergência, consultas, exames", com: [ 81.63, 91.42, 102.39, 117.75, 135.41, 161.14, 201.43, 251.8, 428.05, 479.42, ], sem: [ 110.53, 123.79, 138.64, 159.44, 183.36, 218.2, 272.76, 340.94, 579.61, 649.16, ], }, }, };
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-const getFaixaIndex = (idade) => { if (idade <= 18) return 0; if (idade <= 23) return 1; if (idade <= 28) return 2; if (idade <= 33) return 3; if (idade <= 38) return 4; if (idade <= 43) return 5; if (idade <= 48) return 6; if (idade <= 53) return 7; if (idade <= 58) return 8; return 9; };
+        h1 {
+            text-align: center;
+            color: #003366;
+        }
 
-export default function PlanoSaude() { const [idades, setIdades] = useState(""); const [tipo, setTipo] = useState("individual"); const [plano, setPlano] = useState("nosso plano"); const [resultado, setResultado] = useState("");
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-const calcular = () => { const listaIdades = idades .split(",") .map((i) => parseInt(i.trim())) .filter((i) => !isNaN(i));
+        label {
+            font-size: 16px;
+        }
 
-const planoSelecionado = PLANS[tipo][plano];
+        select, input[type="text"], button {
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
 
-let com = "";
-let totalCom = 0;
-listaIdades.forEach((idade) => {
-  const preco = planoSelecionado.com[getFaixaIndex(idade)];
-  totalCom += preco;
-  com += `* ${idade} anos / R$ ${preco.toFixed(2)}\n`;
-});
+        button {
+            background-color: #f57c00;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+        }
 
-let sem = "";
-let totalSem = 0;
-listaIdades.forEach((idade) => {
-  const preco = planoSelecionado.sem[getFaixaIndex(idade)];
-  totalSem += preco;
-  sem += `* ${idade} anos / R$ ${preco.toFixed(2)}\n`;
-});
+        button:hover {
+            background-color: #ff5722;
+        }
 
-const textoFinal = `*Promoção 15% nas 03 primeiras mensalidades*\n\n${planoSelecionado.descricao}\n\n**Com coparticipação**\n${com}Total R$ ${totalCom.toFixed(2)}\n\n**Sem coparticipação**\n${sem}Total R$ ${totalSem.toFixed(2)}`;
-setResultado(textoFinal);
+        .result {
+            background-color: #e0e0e0;
+            padding: 10px;
+            border-radius: 8px;
+        }
 
-};
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+        }
 
-return ( <div className="p-4 space-y-4"> <h1 className="text-3xl font-bold text-orange-600"> Contador de Planos Hapvida </h1> <h2 className="text-xl font-semibold text-blue-900">EQUIPE ALPHA A MELHOR</h2>
+        .footer p {
+            font-size: 14px;
+            color: #666;
+        }
 
-<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <Input
-      placeholder="Digite as idades separadas por vírgula"
-      value={idades}
-      onChange={(e) => setIdades(e.target.value)}
-    />
+        .footer .team {
+            font-weight: bold;
+            color: #003366;
+        }
+    </style>
+</head>
+<body>
 
-    <select
-      className="border rounded p-2"
-      value={tipo}
-      onChange={(e) => setTipo(e.target.value)}
-    >
-      <option value="individual">Individual</option>
-      <option value="empresarial">Empresarial</option>
-    </select>
+    <div class="container">
+        <h1>Contador de Planos Hapvida</h1>
 
-    <select
-      className="border rounded p-2"
-      value={plano}
-      onChange={(e) => setPlano(e.target.value)}
-    >
-      <option value="nosso plano">Nosso plano</option>
-      <option value="ambulatorial">Ambulatorial</option>
-    </select>
+        <div class="section">
+            <label for="plan-type">Selecione o tipo de plano:</label>
+            <select id="plan-type">
+                <option value="individual">Plano Individual</option>
+                <option value="empresarial">Plano Empresarial</option>
+            </select>
+        </div>
 
-    <Button onClick={calcular}>Calcular</Button>
-  </div>
+        <div class="section">
+            <label for="ages">Idades (separadas por vírgula):</label>
+            <input type="text" id="ages" placeholder="Exemplo: 25,30,35,40">
 
-  {resultado && (
-    <Card>
-      <CardContent className="whitespace-pre-wrap p-4">
-        {resultado}
-      </CardContent>
-    </Card>
-  )}
-</div>
+            <button onclick="calculatePlan()">Calcular Valores</button>
+        </div>
 
-); }
+        <div class="result" id="result"></div>
 
-  
+        <div class="footer">
+            <p>Equipe Alpha A Melhor</p>
+        </div>
+    </div>
+
+    <script>
+        function calculatePlan() {
+            const planType = document.getElementById("plan-type").value;
+            const agesInput = document.getElementById("ages").value;
+            const ages = agesInput.split(",").map(age => age.trim());
+
+            let result = "";
+            let totalWithCoparticipation = 0;
+            let totalWithoutCoparticipation = 0;
+
+            if (planType === "individual") {
+                result += "<strong>Plano Individual:</strong><br>";
+
+                ages.forEach(age => {
+                    age = parseInt(age);
+                    if (age >= 0 && age <= 18) {
+                        result += `Idade ${age} / R$ 152,80 (Com Coparticipação)<br>`;
+                        result += `Idade ${age} / R$ 186,00 (Sem Coparticipação)<br>`;
+                        totalWithCoparticipation += 152.80;
+                        totalWithoutCoparticipation += 186.00;
+                    } else if (age >= 19 && age <= 23) {
+                        result += `Idade ${age} / R$ 195,29 (Com Coparticipação)<br>`;
+                        result += `Idade ${age} / R$ 239,10 (Sem Coparticipação)<br>`;
+                        totalWithCoparticipation += 195.29;
+                        totalWithoutCoparticipation += 239.10;
+                    } else if (age >= 24 && age <= 28) {
+                        result += `Idade ${age} / R$ 221,57 (Com Coparticipação)<br>`;
+                        result += `Idade ${age} / R$ 271,96 (Sem Coparticipação)<br>`;
+                        totalWithCoparticipation += 221.57;
+                        totalWithoutCoparticipation += 271.96;
+                    }
+                    // Adicione mais faixas de idade conforme necessário
+                });
+
+                result += `<strong>Total com Coparticipação: R$ ${totalWithCoparticipation.toFixed(2)}</strong><br>`;
+                result += `<strong>Total sem Coparticipação: R$ ${totalWithoutCoparticipation.toFixed(2)}</strong><br>`;
+            }
+
+            if (planType === "empresarial") {
+                result += "<strong>Plano Empresarial:</strong><br>";
+
+                ages.forEach(age => {
+                    age = parseInt(age);
+                    if (age >= 0 && age <= 18) {
+                        result += `Idade ${age} / R$ 116,52 (Com Coparticipação)<br>`;
+                        result += `Idade ${age} / R$ 149,08 (Sem Coparticipação)<br>`;
+                        totalWithCoparticipation += 116.52;
+                        totalWithoutCoparticipation += 149.08;
+                    } else if (age >= 19 && age <= 23) {
+                        result += `Idade ${age} / R$ 130,90 (Com Coparticipação)<br>`;
+                        result += `Idade ${age} / R$ 166,97 (Sem Coparticipação)<br>`;
+                        totalWithCoparticipation += 130.90;
+                        totalWithoutCoparticipation += 166.97;
+                    } else if (age >= 24 && age <= 28) {
+                        result += `Idade ${age} / R$ 146,16 (Com Coparticipação)<br>`;
+                        result += `Idade ${age} / R$ 187,01 (Sem Coparticipação)<br>`;
+                        totalWithCoparticipation += 146.16;
+                        totalWithoutCoparticipation += 187.01;
+                    }
+                    // Adicione mais faixas de idade conforme necessário
+                });
+
+                result += `<strong>Total com Coparticipação: R$ ${totalWithCoparticipation.toFixed(2)}</strong><br>`;
+                result += `<strong>Total sem Coparticipação: R$ ${totalWithoutCoparticipation.toFixed(2)}</strong><br>`;
+            }
+
+            document.getElementById("result").innerHTML = result;
+        }
+    </script>
+
+</body>
+</html>
