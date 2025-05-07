@@ -139,27 +139,19 @@
     if (tipoPlano === 'individual') {
       resultado += `✅Urgência e emergência: Atendimento imediato em situações críticas, com cobertura 24 horas.
 
-✅Consultas médicas: Acesso facilitado a diversas especialidades com médicos qualificados.
-
-✅Exames simples e complexos: Realização de exames laboratoriais e de imagem com precisão e agilidade.
-
-✅Internações e cirurgias: Cobertura para internações hospitalares e procedimentos cirúrgicos em toda a rede.
-
-✅Rede completa Hapvida: Atendimentos nas Hapclínicas, hospitais e laboratórios credenciados em todo o Brasil.
-
-✅Odonto completo: Cobertura odontológica abrangente, incluindo consultas, limpeza, restaurações, extrações e outros procedimentos essenciais para a saúde bucal.\n\n`;
+✅Consultas médicas
+✅Exames simples e complexos
+✅Internações e cirurgias
+✅Rede completa Hapvida
+✅Odonto completo\n\n`;
     } else {
       resultado += `✅Urgência e emergência: Atendimento imediato em situações críticas, com cobertura 24 horas.
 
-✅Consultas médicas: Acesso facilitado a diversas especialidades com médicos qualificados.
-
-✅Exames simples e complexos: Realização de exames laboratoriais e de imagem com precisão e agilidade.
-
-✅Internações e cirurgias: Cobertura para internações hospitalares e procedimentos cirúrgicos em toda a rede.
-
-✅Rede completa Hapvida: Atendimentos nas Hapclínicas, hospitais e laboratórios credenciados em todo o Brasil.
-
-✅Odontologia opcional: Você pode incluir cobertura odontológica conforme sua necessidade, com preços acessíveis.\n\n`;
+✅Consultas médicas
+✅Exames simples e complexos
+✅Internações e cirurgias
+✅Rede completa Hapvida
+✅Odontologia opcional\n\n`;
     }
 
     resultado += `**Coparticipação total**\n`;
@@ -168,7 +160,7 @@
       const faixa = faixaEtaria(idade);
       const novo = valoresNovos[tipoPlano][coberturaSelecionada].total[faixa];
       const antigo = valoresAntigos[tipoPlano][coberturaSelecionada].total[faixa];
-      resultado += `${idade} anos - <span class="riscado">R$ ${antigo.toFixed(2)}</span> R$ ${novo.toFixed(2)}\n`;
+      resultado += `${idade} anos - ~<span class="riscado">R$ ${antigo.toFixed(2)}</span>~ R$ ${novo.toFixed(2)}\n`;
       totalTotal += novo;
     });
     resultado += `Total: R$ ${totalTotal.toFixed(2)}\n\n`;
@@ -179,7 +171,7 @@
       const faixa = faixaEtaria(idade);
       const novo = valoresNovos[tipoPlano][coberturaSelecionada].parcial[faixa];
       const antigo = valoresAntigos[tipoPlano][coberturaSelecionada].parcial[faixa];
-      resultado += `${idade} anos - <span class="riscado">R$ ${antigo.toFixed(2)}</span> R$ ${novo.toFixed(2)}\n`;
+      resultado += `${idade} anos - ~<span class="riscado">R$ ${antigo.toFixed(2)}</span>~ R$ ${novo.toFixed(2)}\n`;
       totalParcial += novo;
     });
     resultado += `Total: R$ ${totalParcial.toFixed(2)}\n`;
@@ -192,19 +184,15 @@
     if (tipoPlano === 'individual') {
       resultado += `✅Urgência e emergência: Atendimento imediato em situações críticas, com cobertura 24 horas.
 
-✅Consultas médicas: Acesso facilitado a diversas especialidades com médicos qualificados.
-
-✅Exames simples e complexos: Realização de exames laboratoriais e de imagem com precisão e agilidade.
-
-✅Odontologia de emergência: Atendimento odontológico emergencial para casos urgentes como dores intensas, infecções e fraturas dentárias.\n\n`;
+✅Consultas médicas
+✅Exames simples e complexos
+✅Odontologia de emergência\n\n`;
     } else {
       resultado += `✅Urgência e emergência: Atendimento imediato em situações críticas, com cobertura 24 horas.
 
-✅Consultas médicas: Acesso facilitado a diversas especialidades com médicos qualificados.
-
-✅Exames simples e complexos: Realização de exames laboratoriais e de imagem com precisão e agilidade.
-
-✅Odontologia opcional: Você pode incluir cobertura odontológica conforme sua necessidade, com preços acessíveis.\n\n`;
+✅Consultas médicas
+✅Exames simples e complexos
+✅Odontologia opcional\n\n`;
     }
 
     resultado += `**Coparticipação total**\n`;
@@ -213,7 +201,7 @@
       const faixa = faixaEtaria(idade);
       const novo = valoresNovos[tipoPlano][coberturaSelecionada].total[faixa];
       const antigo = valoresAntigos[tipoPlano][coberturaSelecionada].total[faixa];
-      resultado += `${idade} anos - <span class="riscado">R$ ${antigo.toFixed(2)}</span> R$ ${novo.toFixed(2)}\n`;
+      resultado += `${idade} anos - ~<span class="riscado">R$ ${antigo.toFixed(2)}</span>~ R$ ${novo.toFixed(2)}\n`;
       totalTotal += novo;
     });
     resultado += `Total: R$ ${totalTotal.toFixed(2)}\n\n`;
@@ -224,7 +212,7 @@
       const faixa = faixaEtaria(idade);
       const novo = valoresNovos[tipoPlano][coberturaSelecionada].parcial[faixa];
       const antigo = valoresAntigos[tipoPlano][coberturaSelecionada].parcial[faixa];
-      resultado += `${idade} anos - <span class="riscado">R$ ${antigo.toFixed(2)}</span> R$ ${novo.toFixed(2)}\n`;
+      resultado += `${idade} anos - ~<span class="riscado">R$ ${antigo.toFixed(2)}</span>~ R$ ${novo.toFixed(2)}\n`;
       totalParcial += novo;
     });
     resultado += `Total: R$ ${totalParcial.toFixed(2)}\n`;
